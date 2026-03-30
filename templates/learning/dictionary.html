@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="header-card" style="background: #fff; border-radius: 15px; padding: 25px; margin-bottom: 30px; border: 1px solid #fce7f3; box-shadow: 0 4px 15px rgba(219, 39, 119, 0.05);">
+        <h2 style="color: #db2777; margin: 0; font-weight: 700;">Словник</h2>
+        <div style="width: 50px; height: 4px; background: #db2777; margin-top: 10px; border-radius: 2px;"></div>
+    </div>
+
+    <div class="row">
+        {% for lesson in lessons %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100" style="border-radius: 15px; border: 1px solid #fce7f3; transition: transform 0.2s;">
+                <div class="card-body">
+                    <h5 class="card-title" style="color: #db2777;">{{ lesson.title }}</h5>
+                    <p class="card-text text-muted">Рівень: {{ lesson.level }}</p>
+                    <a href="{% url 'lesson_detail' lesson.id %}" class="btn" style="background-color: #db2777; color: white; border-radius: 8px;">Переглянути</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-center">Словників поки що не додано.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

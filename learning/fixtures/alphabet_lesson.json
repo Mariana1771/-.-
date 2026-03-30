@@ -1,0 +1,13 @@
+[
+  {
+    "model": "learning.lesson",
+    "pk": 7,
+    "fields": {
+      "title": "Алфавіт — Abeceda",
+      "level": "A1",
+      "icon": "",
+      "theory": "",
+      "order": 0
+    }
+  }
+]

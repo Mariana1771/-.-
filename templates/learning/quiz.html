@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+
+{% block title %}Тест — Slovak.sk{% endblock %}
+
+{% block content %}
+<div class="container-sm" style="max-width: 800px; margin: 0 auto; padding: 20px;">
+  
+  <div class="page-header" style="text-align: center; margin-bottom: 40px;">
+    <h1 class="page-title" style="font-size: 32px; font-weight: 700; color: #111827;">Словацька мова: Тест</h1>
+    <p class="page-sub" style="color: #6b7280;">{{ questions|length }} питань — обери правильну відповідь для кожного</p>
+  </div>
+
+  {% if not user.is_authenticated %}
+  <div class="alert shadow-sm" style="background-color: #f0f9ff; border-left: 4px solid #0ea5e9; padding: 15px; border-radius: 8px; margin-bottom: 24px;">
+    <p style="margin: 0; color: #0369a1;">
+        <strong>Порада:</strong> Результат тесту не збережеться. 
+        <a href="{% url 'register' %}" style="text-decoration: underline; font-weight: 600;">Зареєструйся</a>, щоб бачити свою статистику та прогрес.
+    </p>
+  </div>
+  {% endif %}
+
+  <form method="post" id="quiz-form">
+    {% csrf_token %}
+
+    {% for q in questions %}
+    <div class="card shadow-sm" style="background: #fff; border-radius: 16px; padding: 24px; margin-bottom: 24px; border: 1px solid #f3f4f6; border-left: 6px solid #db2777;">
+      
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <span style="font-size:13px; font-weight:600; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.05em;">
+            Питання {{ forloop.counter }}
+        </span>
+        <span class="badge" style="background: #fdf2f8; color: #db2777; padding: 4px 12px; border-radius: 20px; font-weight: 700; font-size: 12px; border: 1px solid #fce7f3;">
+            {{ q.level }}
+        </span>
+      </div>
+
+      <h5 style="font-size:18px; font-weight:600; margin-bottom:20px; color: #1f2937; line-height: 1.5;">
+          {{ q.question }}
+      </h5>
+
+      <div class="quiz-options-group">
+        <label class="quiz-option-label">
+          <input type="radio" name="q_{{ q.id }}" value="0" required class="quiz-radio">
+          <div class="option-content">
+              <span class="option-letter">A</span>
+              <span class="option-text">{{ q.option_a }}</span>
+          </div>
+        </label>
+
+        <label class="quiz-option-label">
+          <input type="radio" name="q_{{ q.id }}" value="1" class="quiz-radio">
+          <div class="option-content">
+              <span class="option-letter">B</span>
+              <span class="option-text">{{ q.option_b }}</span>
+          </div>
+        </label>
+
+        <label class="quiz-option-label">
+          <input type="radio" name="q_{{ q.id }}" value="2" class="quiz-radio">
+          <div class="option-content">
+              <span class="option-letter">C</span>
+              <span class="option-text">{{ q.option_c }}</span>
+          </div>
+        </label>
+      </div>
+    </div>
+    {% empty %}
+    <div class="card" style="text-align:center; padding: 50px; border-radius: 16px; background: #f9fafb; border: 2px dashed #e5e7eb;">
+      <p style="color: #6b7280; font-size: 16px;">Питань ще немає. Додай їх через адмінку.</p>
+      <a href="/admin/learning/quizquestion/add/" class="btn" style="color: #db2777; font-weight: 600; text-decoration: underline;">Додати перше питання</a>
+    </div>
+    {% endfor %}
+
+    {% if questions %}
+    <div style="margin-top: 30px; text-align: center; padding-bottom: 50px;">
+      <button type="submit" class="btn-submit">
+        Перевірити відповіді <span style="margin-left: 8px;">→</span>
+      </button>
+    </div>
+    {% endif %}
+  </form>
+</div>
+
+<style>
+  /* Кастомні стилі для варіантів */
+  .quiz-option-label {
+    display: block;
+    cursor: pointer;
+    margin-bottom: 12px;
+  }
+
+  .quiz-radio {
+    display: none; /* Ховаємо стандартний кружечок */
+  }
+
+  .option-content {
+    display: flex;
+    align-items: center;
+    padding: 14px 20px;
+    background: #fff;
+    border: 2px solid #f3f4f6;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+  }
+
+  .option-letter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: #f3f4f6;
+    color: #6b7280;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 14px;
+    margin-right: 15px;
+  }
+
+  .option-text {
+    font-size: 16px;
+    color: #374151;
+    font-weight: 500;
+  }
+
+  /* Ефекти при наведенні */
+  .quiz-option-label:hover .option-content {
+    border-color: #fce7f3;
+    background-color: #fff1f2;
+  }
+
+  /* Стиль при виборі (Checked) */
+  .quiz-radio:checked + .option-content {
+    border-color: #db2777;
+    background-color: #fdf2f8;
+  }
+
+  .quiz-radio:checked + .option-content .option-letter {
+    background-color: #db2777;
+    color: #fff;
+  }
+
+  .quiz-radio:checked + .option-content .option-text {
+    color: #db2777;
+    font-weight: 600;
+  }
+
+  /* Кнопка відправки */
+  .btn-submit {
+    background-color: #db2777;
+    color: white;
+    padding: 16px 40px;
+    border: none;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    box-shadow: 0 4px 15px rgba(219, 39, 119, 0.3);
+  }
+
+  .btn-submit:hover {
+    background-color: #be185d;
+    box-shadow: 0 6px 20px rgba(219, 39, 119, 0.4);
+    transform: translateY(-2px);
+  }
+</style>
+{% endblock %}

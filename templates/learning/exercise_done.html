@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Урок завершено! — Slovak.sk{% endblock %}
+{% block content %}
+<div class="container-sm" style="text-align:center;padding-top:60px;">
+  <div style="font-size:56px;margin-bottom:16px;">
+    {% if score == total %}{% elif score >= total|floatformat:0|add:"-1" %}{% else %}{% endif %}
+  </div>
+  <h1 style="font-family:'Playfair Display',serif;font-size:30px;margin-bottom:8px;">Урок завершено!</h1>
+  <p style="color:var(--text-2);margin-bottom:28px;">{{ lesson.title }}</p>
+
+  <div class="card" style="margin-bottom:24px;display:inline-block;min-width:260px;">
+    <div style="font-size:48px;font-weight:700;color:var(--pink-500);line-height:1;">{{ score }}/{{ total }}</div>
+    <div style="color:var(--text-3);margin-top:6px;font-size:14px;">правильних відповідей</div>
+    <hr class="divider">
+    <div style="font-size:22px;font-weight:700;color:var(--pink-400);">+{{ xp }} XP</div>
+    <div style="color:var(--text-3);font-size:13px;margin-top:4px;">
+      {% if score == total %}Ідеально! Всі правильно! 
+      {% elif score >= 2 %}Непогано, продовжуй! 
+      {% else %}Повтори теорію і спробуй знову {% endif %}
+    </div>
+  </div>
+
+  <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+    {% if score < total %}
+    <a href="{% url 'exercise' lesson.id %}" class="btn btn-outline"> Спробувати ще раз</a>
+    {% endif %}
+    <a href="{% url 'grammar_list' %}" class="btn btn-primary"> До уроків</a>
+    <a href="{% url 'quiz' %}" class="btn btn-ghost"> Пройти тест</a>
+  </div>
+</div>
+{% endblock %}
