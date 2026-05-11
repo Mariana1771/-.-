@@ -1,6 +1,5 @@
 /** Порожній origin = браузер б’ється в той же хост що й Vite, проксі веде на Django :8000. */
-const apiOrigin = (import.meta.env.VITE_API_ORIGIN as string | undefined) ?? ''
-
+const apiOrigin = (import.meta.env.VITE_API_ORIGIN as string | undefined) ?? 'https://beneficial-empathy-production-927e.up.railway.app'
 function url(path: string) {
   if (path.startsWith('http')) return path
   return `${apiOrigin}${path}`
