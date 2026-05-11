@@ -1,0 +1,359 @@
+{% extends 'base.html' %}
+{% block title %}Сертифікат — Slovak.sk{% endblock %}
+
+{% block content %}
+<div class="container-sm" style="max-width: 920px;">
+  <div class="card" style="padding: 24px;">
+    <div class="no-print" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-start;">
+      <div>
+        <div style="font-weight:900;font-size:18px;color:#111827;">Сертифікат</div>
+        <div style="color:#6b7280;margin-top:6px;">ID: <strong>{{ cert_id }}</strong></div>
+      </div>
+      <div style="text-align:right;">
+        <div style="color:#6b7280;">Дата</div>
+        <div style="font-weight:900;color:#111827;">{{ date_str }}</div>
+      </div>
+    </div>
+
+    <div class="cert-sheet">
+      <div class="cert-border">
+        <div class="cert-cat-photo" aria-hidden="true">
+          <img src="{{ MEDIA_URL }}cert_cat_cutout.png" alt="">
+        </div>
+
+        <div class="cert-top">
+          <div class="cert-brand">
+            <div class="cert-brand-title">SLOVAK.SK</div>
+            <div class="cert-brand-sub">{{ program.title }}</div>
+          </div>
+          <div class="cert-meta">
+            <div><span>Certificate ID</span><strong>{{ cert_id }}</strong></div>
+            <div><span>Date</span><strong>{{ date_str }}</strong></div>
+          </div>
+        </div>
+
+        <div class="cert-center">
+          <div class="cert-badge-row">
+            <div class="cert-badge">{{ program.level }}</div>
+            <div class="cert-badge-light">Certificate of Completion</div>
+          </div>
+
+          <div class="cert-line">This certifies that</div>
+          <div class="cert-name">{{ display_name }}</div>
+          <div class="cert-line2">
+            has successfully completed the certification program on the platform.
+          </div>
+
+          <div class="cert-result">{{ result_line }}</div>
+        </div>
+
+        <div class="cert-bottom">
+          <div class="cert-sign">
+            <div class="cert-sign-line"></div>
+            <div class="cert-sign-label">Platform signature</div>
+            <div class="cert-sign-name">Slovak.sk</div>
+          </div>
+          <div class="cert-verify">
+            <div class="cert-verify-title">Verification</div>
+            <div class="cert-verify-row"><span>ID</span><strong>{{ cert_id }}</strong></div>
+            <div class="cert-verify-row"><span>Date</span><strong>{{ date_str }}</strong></div>
+            <div class="cert-verify-hint">Use this ID to confirm authenticity.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="no-print" style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+      <a class="btn btn-primary" href="{% url 'certificate_pdf' program.slug %}">Зберегти PDF</a>
+      <a class="btn btn-outline" href="{% url 'certificate_exam_path' program.slug %}">Назад до кроків</a>
+    </div>
+
+    <div class="card no-print" style="margin-top:14px;padding:16px;border-radius:16px;border:1px solid #f1f5f9;background:#fff;">
+      <div style="font-weight:900;color:#111827;margin-bottom:10px;">Надіслати на пошту</div>
+      <form method="post" action="{% url 'certificate_email' program.slug %}" style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
+        {% csrf_token %}
+        <div style="flex:1;min-width:240px;">
+          <label class="form-label" style="margin-bottom:6px;">Email</label>
+          <input class="form-input" type="email" name="email" placeholder="name@example.com" required value="{{ default_email }}">
+        </div>
+        <button class="btn btn-primary" type="submit">Надіслати PDF</button>
+      </form>
+      <div style="color:#94a3b8;font-size:12px;margin-top:8px;line-height:1.6;">
+        Сертифікат прийде у вкладенні PDF. Якщо листи не доходять — перевір “Spam”.
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.cert-sheet{
+  margin-top:18px;
+  background: linear-gradient(135deg, rgba(219,39,119,.08), rgba(14,165,233,.06));
+  border-radius: 18px;
+  padding: 18px;
+  border: 1px solid #f1f5f9;
+}
+.cert-border{
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  background: #fff;
+  padding: 30px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, .08);
+}
+.cert-cat-photo{
+  position:absolute;
+  left: 18px;
+  bottom: 18px;
+  width: 240px;
+  height: 165px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: visible;
+  transform: rotate(-3deg);
+  pointer-events:none;
+}
+.cert-cat-photo img{
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 0;
+  filter: drop-shadow(0 18px 22px rgba(15,23,42,.22));
+}
+
+/* Give space so cat doesn't collide with meta */
+.cert-top{
+  padding-right: 0;
+}
+
+@media (max-width: 720px){
+  .cert-top{ padding-right: 0; }
+  .cert-cat-photo{
+    position: relative;
+    right: auto;
+    top: auto;
+    width: 220px;
+    height: 150px;
+    margin: 12px auto 0;
+    left: auto;
+    bottom: auto;
+  }
+}
+
+/* Give space so cat doesn't collide with bottom row */
+.cert-bottom{
+  padding-left: 340px;
+  padding-bottom: 14px;
+}
+@media (max-width: 720px){
+  .cert-bottom{ padding-left: 0; }
+}
+.cert-top{
+  position: relative;
+  display:flex;
+  justify-content:space-between;
+  gap: 16px;
+  flex-wrap:wrap;
+  align-items:flex-start;
+}
+.cert-brand-title{
+  font-weight: 900;
+  letter-spacing: .18em;
+  color:#0f172a;
+  font-size: 14px;
+}
+.cert-brand-sub{
+  margin-top: 6px;
+  color:#475569;
+  font-weight: 800;
+  font-size: 14px;
+}
+.cert-meta{
+  display:flex;
+  gap: 14px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+  color:#475569;
+  font-size: 12px;
+}
+.cert-meta span{
+  display:block;
+  color:#94a3b8;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  font-size: 10px;
+  margin-bottom: 4px;
+}
+.cert-meta strong{
+  display:block;
+  color:#0f172a;
+  font-weight: 900;
+  font-size: 13px;
+}
+.cert-center{
+  position: relative;
+  text-align:center;
+  margin-top: 22px;
+  padding: 10px 0 6px;
+}
+.cert-badge-row{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap: 10px;
+  flex-wrap:wrap;
+  margin-bottom: 14px;
+}
+.cert-badge{
+  background:#db2777;
+  color:#fff;
+  font-weight: 900;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  letter-spacing: .08em;
+}
+.cert-badge-light{
+  background:#fdf2f8;
+  color:#9d174d;
+  border: 1px solid #fce7f3;
+  font-weight: 900;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  letter-spacing: .04em;
+}
+.cert-line{
+  color:#64748b;
+  font-weight: 800;
+  font-size: 14px;
+}
+.cert-name{
+  margin-top: 10px;
+  font-size: 34px;
+  font-weight: 1000;
+  color:#0f172a;
+  line-height: 1.1;
+}
+.cert-line2{
+  margin-top: 10px;
+  color:#475569;
+  font-size: 15px;
+  line-height: 1.7;
+  font-weight: 700;
+}
+.cert-result{
+  margin: 16px auto 0;
+  max-width: 720px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color:#0f172a;
+  font-weight: 800;
+}
+.cert-bottom{
+  position: relative;
+  margin-top: 22px;
+  display:flex;
+  justify-content:space-between;
+  gap: 16px;
+  flex-wrap:wrap;
+  align-items:flex-end;
+}
+.cert-sign{
+  min-width: 240px;
+}
+.cert-sign-line{
+  height: 2px;
+  width: 260px;
+  max-width: 100%;
+  background: linear-gradient(90deg, #db2777, #0ea5e9);
+  border-radius: 999px;
+}
+.cert-sign-label{
+  margin-top: 8px;
+  color:#64748b;
+  font-size: 12px;
+  font-weight: 800;
+}
+.cert-sign-name{
+  margin-top: 2px;
+  color:#0f172a;
+  font-weight: 900;
+}
+.cert-verify{
+  min-width: 240px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background:#fff;
+  border: 1px solid #e5e7eb;
+}
+.cert-verify-title{
+  font-weight: 900;
+  color:#0f172a;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+.cert-verify-row{
+  display:flex;
+  justify-content:space-between;
+  gap: 10px;
+  color:#475569;
+  font-size: 12px;
+  margin-top: 4px;
+}
+.cert-verify-row span{
+  color:#94a3b8;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing:.08em;
+  font-size: 10px;
+}
+.cert-verify-row strong{
+  color:#0f172a;
+  font-weight: 900;
+}
+.cert-verify-hint{
+  margin-top: 8px;
+  color:#94a3b8;
+  font-size: 11px;
+  line-height: 1.5;
+  font-weight: 700;
+}
+
+@media print {
+  @page { size: A5 portrait; margin: 10mm; }
+  nav, .nav, footer, .page-header { display:none !important; }
+  .no-print { display:none !important; }
+  .card { box-shadow:none !important; border:none !important; padding:0 !important; }
+  html, body { background:#fff !important; margin:0 !important; padding:0 !important; }
+  .cert-sheet{ border:none !important; padding:0 !important; background:#fff !important; margin-top:0 !important; }
+  .cert-border{ box-shadow:none !important; border:none !important; padding:0 !important; }
+
+  /* Print layout: tighten and avoid huge whitespace */
+  .cert-center{ margin-top: 10px !important; padding-top: 0 !important; }
+  .cert-result{ margin-top: 10px !important; }
+
+  /* Cat stays bottom-left, but smaller on print to fit A5 nicely */
+  .cert-cat-photo{
+    left: 10px !important;
+    bottom: 10px !important;
+    width: 190px !important;
+    height: 130px !important;
+    transform: rotate(-2deg) !important;
+  }
+
+  /* Push bottom row to the right so it never overlaps cat */
+  .cert-bottom{
+    padding-left: 260px !important;
+    margin-top: 14px !important;
+    padding-bottom: 0 !important;
+  }
+}
+</style>
+{% endblock %}

@@ -1,0 +1,83 @@
+[
+  {
+    "model": "learning.lesson",
+    "pk": 8,
+    "fields": {
+      "title": "Особові займенники та звертання",
+      "level": "A1",
+      "icon": "",
+      "order": 7,
+      "theory": "<b>Особові займенники:</b><br/><br/>ja — я<br/>ty — ти<br/>on — він<br/>ona — вона<br/>my — ми<br/>vy — ви<br/>oni/ony — вони<br/><br/><b>Ви чи ти?</b><br/>• <b>ty</b> — неформально (друзі, сімʼя)<br/>• <b>vy</b> — ввічливо/офіційно<br/><br/><b>Корисні фрази:</b><br/>Kto si? — Хто ти?<br/>Kto je to? — Хто це?<br/>Ty si z Ukrajiny? — Ти з України?<br/>Vy ste z Kyjeva? — Ви з Києва?"
+    }
+  },
+  {
+    "model": "learning.lesson",
+    "pk": 9,
+    "fields": {
+      "title": "Рід іменників (m/ž/st)",
+      "level": "A1",
+      "icon": "",
+      "order": 8,
+      "theory": "<b>У словацькій 3 роди:</b><br/><br/><b>Чоловічий</b> (mužský): chlap, otec, deň<br/><b>Жіночий</b> (ženský): žena, škola, ulica<br/><b>Середній</b> (stredný): mesto, dieťa, okno<br/><br/><b>Підказки:</b><br/>• часто <b>-a</b> → жіночий (žena, škola)<br/>• часто <b>-o/-e</b> → середній (mesto, okno)<br/><br/><b>Приклади з byť:</b><br/>To je <b>chlap</b>. To je <b>žena</b>. To je <b>mesto</b>."
+    }
+  },
+  {
+    "model": "learning.lesson",
+    "pk": 10,
+    "fields": {
+      "title": "Питання: kto? čo? kde? kedy?",
+      "level": "A1",
+      "icon": "",
+      "order": 9,
+      "theory": "<b>Питальні слова:</b><br/><br/>kto? — хто?<br/>čo? — що?<br/>kde? — де?<br/>kedy? — коли?<br/>ako? — як?<br/>prečo? — чому?<br/><br/><b>Приклади:</b><br/>Kde bývaš? — Де ти живеш?<br/>Kedy ideš domov? — Коли ти йдеш додому?<br/>Čo robíš? — Що ти робиш?"
+    }
+  },
+  {
+    "model": "learning.lesson",
+    "pk": 11,
+    "fields": {
+      "title": "Час і години",
+      "level": "A1",
+      "icon": "",
+      "order": 10,
+      "theory": "<b>Запитати час:</b><br/>Koľko je hodín? — Котра година?<br/><br/><b>Відповісти:</b><br/>Je jedna hodina. — 1:00<br/>Sú dve hodiny. — 2:00<br/>Je päť hodín. — 5:00<br/><br/><b>Пів/чверть:</b><br/>Je pol druhej. — 1:30<br/>Je štvrť na tri. — 2:15<br/>Je trištvrte na tri. — 2:45<br/><br/><b>Коли?</b><br/>o ôsmej — о 8:00<br/>o desiatej — о 10:00"
+    }
+  },
+  {
+    "model": "learning.lesson",
+    "pk": 12,
+    "fields": {
+      "title": "Базові дієслова: mať, bývať, ísť",
+      "level": "A1",
+      "icon": "",
+      "order": 11,
+      "theory": "<b>mať</b> (мати):<br/>ja mám · ty máš · on/ona má · my máme · vy máte · oni majú<br/><br/><b>bývať</b> (жити/мешкати):<br/>ja bývam · ty bývaš · on/ona býva · my bývame · vy bývate · oni bývajú<br/><br/><b>ísť</b> (йти/їхати):<br/>ja idem · ty ideš · on/ona ide · my ideme · vy idete · oni idú<br/><br/><b>Приклади:</b><br/>Mám čas. — Я маю час.<br/>Bývam v Bratislave. — Я живу в Братиславі.<br/>Idem domov. — Я йду додому."
+    }
+  },
+
+  { "model": "learning.exercise", "pk": 20, "fields": { "lesson": 8, "question": "Оберіть займенник для ввічливого звертання:", "exercise_type": "choice", "correct_answer": "1", "option_a": "ty", "option_b": "vy", "option_c": "ja", "order": 1 } },
+  { "model": "learning.exercise", "pk": 21, "fields": { "lesson": 8, "question": "Переклад: 'Ми з України' (потрібно займенник + byť).", "exercise_type": "fill", "correct_answer": "My sme z Ukrajiny", "option_a": "", "option_b": "", "option_c": "", "order": 2 } },
+  { "model": "learning.exercise", "pk": 22, "fields": { "lesson": 8, "question": "Kto ___ to? (byť)", "exercise_type": "choice", "correct_answer": "2", "option_a": "som", "option_b": "sme", "option_c": "je", "order": 3 } },
+  { "model": "learning.exercise", "pk": 23, "fields": { "lesson": 8, "question": "Оберіть правильний займенник: ___ som študent.", "exercise_type": "choice", "correct_answer": "0", "option_a": "ja", "option_b": "ty", "option_c": "vy", "order": 4 } },
+
+  { "model": "learning.exercise", "pk": 24, "fields": { "lesson": 9, "question": "Який рід у слова 'mesto'?", "exercise_type": "choice", "correct_answer": "2", "option_a": "чоловічий", "option_b": "жіночий", "option_c": "середній", "order": 1 } },
+  { "model": "learning.exercise", "pk": 25, "fields": { "lesson": 9, "question": "Який рід у слова 'žena'?", "exercise_type": "choice", "correct_answer": "1", "option_a": "чоловічий", "option_b": "жіночий", "option_c": "середній", "order": 2 } },
+  { "model": "learning.exercise", "pk": 26, "fields": { "lesson": 9, "question": "Заповніть: To je ___. (okno)", "exercise_type": "fill", "correct_answer": "okno", "option_a": "", "option_b": "", "option_c": "", "order": 3 } },
+  { "model": "learning.exercise", "pk": 27, "fields": { "lesson": 9, "question": "Підказка по закінченню -a найчастіше означає:", "exercise_type": "choice", "correct_answer": "1", "option_a": "середній рід", "option_b": "жіночий рід", "option_c": "чоловічий рід", "order": 4 } },
+
+  { "model": "learning.exercise", "pk": 28, "fields": { "lesson": 10, "question": "Яке питання відповідає 'kde'?", "exercise_type": "choice", "correct_answer": "0", "option_a": "де?", "option_b": "коли?", "option_c": "чому?", "order": 1 } },
+  { "model": "learning.exercise", "pk": 29, "fields": { "lesson": 10, "question": "Переклад: 'Коли ти йдеш додому?'", "exercise_type": "fill", "correct_answer": "Kedy ideš domov?", "option_a": "", "option_b": "", "option_c": "", "order": 2 } },
+  { "model": "learning.exercise", "pk": 30, "fields": { "lesson": 10, "question": "Оберіть правильне слово: ___ robíš? (що ти робиш?)", "exercise_type": "choice", "correct_answer": "1", "option_a": "Kto", "option_b": "Čo", "option_c": "Kedy", "order": 3 } },
+  { "model": "learning.exercise", "pk": 31, "fields": { "lesson": 10, "question": "Склади питання: 'Де ти живеш?' (використай bývať)", "exercise_type": "fill", "correct_answer": "Kde bývaš?", "option_a": "", "option_b": "", "option_c": "", "order": 4 } },
+
+  { "model": "learning.exercise", "pk": 32, "fields": { "lesson": 11, "question": "Як запитати час словацькою?", "exercise_type": "fill", "correct_answer": "Koľko je hodín?", "option_a": "", "option_b": "", "option_c": "", "order": 1 } },
+  { "model": "learning.exercise", "pk": 33, "fields": { "lesson": 11, "question": "Je pol druhej означає:", "exercise_type": "choice", "correct_answer": "1", "option_a": "2:30", "option_b": "1:30", "option_c": "1:15", "order": 2 } },
+  { "model": "learning.exercise", "pk": 34, "fields": { "lesson": 11, "question": "Заповніть: Je ___ hodín. (5:00)", "exercise_type": "fill", "correct_answer": "päť", "option_a": "", "option_b": "", "option_c": "", "order": 3 } },
+  { "model": "learning.exercise", "pk": 35, "fields": { "lesson": 11, "question": "Оберіть правильне: ___ dve hodiny.", "exercise_type": "choice", "correct_answer": "0", "option_a": "Sú", "option_b": "Je", "option_c": "Som", "order": 4 } },
+
+  { "model": "learning.exercise", "pk": 36, "fields": { "lesson": 12, "question": "Ja ___ čas. (mať)", "exercise_type": "fill", "correct_answer": "mám", "option_a": "", "option_b": "", "option_c": "", "order": 1 } },
+  { "model": "learning.exercise", "pk": 37, "fields": { "lesson": 12, "question": "My ___ v Bratislave. (bývať)", "exercise_type": "choice", "correct_answer": "1", "option_a": "bývam", "option_b": "bývame", "option_c": "bývajú", "order": 2 } },
+  { "model": "learning.exercise", "pk": 38, "fields": { "lesson": 12, "question": "Ty ___ domov. (ísť)", "exercise_type": "fill", "correct_answer": "ideš", "option_a": "", "option_b": "", "option_c": "", "order": 3 } },
+  { "model": "learning.exercise", "pk": 39, "fields": { "lesson": 12, "question": "Оберіть правильне: oni ___ do školy. (ísť)", "exercise_type": "choice", "correct_answer": "2", "option_a": "ideme", "option_b": "idete", "option_c": "idú", "order": 4 } }
+]
+

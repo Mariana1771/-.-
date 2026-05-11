@@ -1,0 +1,65 @@
+services:
+  db:
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_DATABASE: ${DB_NAME:-lingua_db}
+      MYSQL_USER: ${DB_USER:-lingua_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-lingua_password}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root_password}
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+  backend:
+    build:
+      context: ./backend
+    environment:
+      DJANGO_DEBUG: "0"
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-change-me}
+      DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost}
+      CSRF_TRUSTED_ORIGINS: ${CSRF_TRUSTED_ORIGINS:-http://localhost}
+      DB_HOST: db
+      DB_PORT: "3306"
+      DB_NAME: ${DB_NAME:-lingua_db}
+      DB_USER: ${DB_USER:-lingua_user}
+      DB_PASSWORD: ${DB_PASSWORD:-lingua_password}
+      STRIPE_PUBLIC_KEY: ${STRIPE_PUBLIC_KEY:-}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+      EMAIL_HOST: ${EMAIL_HOST:-}
+      EMAIL_PORT: ${EMAIL_PORT:-587}
+      EMAIL_HOST_USER: ${EMAIL_HOST_USER:-}
+      EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD:-}
+      EMAIL_USE_TLS: ${EMAIL_USE_TLS:-1}
+      DEFAULT_FROM_EMAIL: ${DEFAULT_FROM_EMAIL:-no-reply@slovak.local}
+      TURBOSMS_TOKEN: ${TURBOSMS_TOKEN:-}
+      TURBOSMS_SENDER: ${TURBOSMS_SENDER:-TurboSMS}
+      LIQPAY_PUBLIC_KEY: ${LIQPAY_PUBLIC_KEY:-}
+      LIQPAY_PRIVATE_KEY: ${LIQPAY_PRIVATE_KEY:-}
+      LIQPAY_SANDBOX: ${LIQPAY_SANDBOX:-1}
+      PREMIUM_PAYMENT_URL: ${PREMIUM_PAYMENT_URL:-}
+      PREMIUM_PAYMENT_INSTRUCTIONS: ${PREMIUM_PAYMENT_INSTRUCTIONS:-}
+    depends_on:
+      - db
+    volumes:
+      - media_data:/app/media
+      - staticfiles_data:/app/staticfiles
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build:
+      context: ./frontend
+    depends_on:
+      - backend
+    ports:
+      - "8080:80"
+
+volumes:
+  db_data:
+  media_data:
+  staticfiles_data:
+

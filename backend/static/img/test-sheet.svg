@@ -1,0 +1,25 @@
+<svg width="160" height="160" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="testGrad" x1="0" y1="0" x2="160" y2="160">
+      <stop offset="0%" stop-color="#A78BFA"/>
+      <stop offset="100%" stop-color="#9333EA"/>
+    </linearGradient>
+    <filter id="blur">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="0.5"/>
+    </filter>
+  </defs>
+  <!-- Glow background -->
+  <circle cx="80" cy="80" r="75" fill="url(#testGrad)" opacity="0.08"/>
+  <!-- Book 3D -->
+  <g>
+    <!-- Top edge -->
+    <path d="M 40 32 L 48 26 L 128 26 L 120 32" fill="url(#testGrad)" opacity="0.3"/>
+    <!-- Right spine -->
+    <path d="M 120 32 L 128 26 L 128 118 L 120 124" fill="url(#testGrad)" opacity="0.2"/>
+    <!-- Front cover -->
+    <rect x="40" y="32" width="80" height="92" rx="8" fill="#fff" stroke="url(#testGrad)" stroke-width="3" opacity="0.95" filter="url(#blur)"/>
+    <!-- Decoration -->
+    <circle cx="80" cy="65" r="10" fill="url(#testGrad)" opacity="0.15"/>
+    <circle cx="85" cy="82" r="6" fill="url(#testGrad)" opacity="0.1"/>
+  </g>
+</svg>

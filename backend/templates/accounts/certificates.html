@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block title %}Сертифікати — Slovak.sk{% endblock %}
+
+{% block content %}
+<div class="container-sm" style="max-width: 760px;">
+  <div class="page-header" style="text-align:center;">
+    <h1 class="page-title">Сертифікати</h1>
+    <p class="page-sub">Не “просто PDF”, а повна програма з прогресом і умовами.</p>
+  </div>
+
+  {% for card in program_cards %}
+    {% with p=card.program %}
+    <div class="card" style="margin-bottom: 16px;">
+      <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-start;">
+        <div>
+          <div style="font-weight:900;font-size:18px;color:#111827;margin-bottom:6px;">{{ p.title }} ({{ p.level }})</div>
+          <div style="color:#6b7280;line-height:1.75;">
+            Умови: <strong>{{ p.required_lessons_percent }}%</strong> уроків курсу + фінальний тест <strong>{{ p.required_quiz_percent }}%</strong>+.
+          </div>
+          <div style="margin-top:10px;">
+            {% if card.paid %}
+              <a class="btn btn-outline" href="{% url 'certificate_exam_path' p.slug %}">Відкрити програму →</a>
+            {% else %}
+              <a class="btn btn-outline" href="{% url 'certificates_page' %}?buy={{ p.slug }}#pay">Оплатити і відкрити →</a>
+            {% endif %}
+          </div>
+        </div>
+        <div style="min-width:240px;">
+          {% if card.paid %}
+            <div style="padding:12px 14px;border-radius:12px;background:#ecfdf5;border:1px solid #bbf7d0;color:#065f46;line-height:1.7;">
+              Оплачено. Іспит і сертифікат розблоковано.
+            </div>
+          {% else %}
+            <div style="padding:12px 14px;border-radius:12px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;line-height:1.7;">
+              Оплата відкриває фінальний іспит і генерацію сертифіката.
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endwith %}
+  {% endfor %}
+
+  <div class="card" id="pay" style="margin-bottom: 16px;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;">
+      <div>
+        <div style="font-weight:900;font-size:18px;color:#111827;">Підсумковий іспит</div>
+        <div style="color:#6b7280;margin-top:6px;line-height:1.7;">
+          Вартість: <strong>{{ price_eur }}€</strong>
+        </div>
+        <div style="color:#6b7280;margin-top:6px;line-height:1.7;">
+          Купівля: <strong>окремо від Premium</strong>
+        </div>
+        <div style="color:#6b7280;margin-top:6px;line-height:1.7;">
+          Оплата: <strong>через Stripe (карткою)</strong>
+        </div>
+      </div>
+      <div style="min-width: 220px;">
+        <form method="post" action="{% url 'certificate_stripe_checkout' %}">
+          {% csrf_token %}
+          <div class="form-group" style="margin-bottom:10px;">
+            <label class="form-label" style="margin-bottom:6px;">Рівень сертифікації</label>
+            <select class="form-input" name="program_slug" required>
+              {% for p in programs %}
+                <option value="{{ p.slug }}" {% if preselect_slug and preselect_slug == p.slug %}selected{% endif %}>
+                  {{ p.level }} — {{ p.title }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+          <button class="btn btn-primary" type="submit" style="width:100%;justify-content:center;">
+            Оплатити через Stripe
+          </button>
+        </form>
+        <div style="color:#9ca3af;font-size:12px;margin-top:8px;line-height:1.6;">
+          Після успішної оплати іспит/сертифікат одразу розблокуються.
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+

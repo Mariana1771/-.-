@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container" style="max-width: 900px;">
+  <div class="header-card" style="background:#fff;border-radius:15px;padding:24px;margin-bottom:20px;border:1px solid #fce7f3;">
+    <a href="{% url 'texts' %}" style="text-decoration:none;color:#db2777;font-weight:700;">← До списку текстів</a>
+    <h2 style="margin-top:8px;color:#1f2937;">{{ lesson.title }}</h2>
+    <p style="color:#64748b;margin:0;">Виділи слово для перекладу. Для підсвітки обери колір і просто виділяй текст.</p>
+  </div>
+
+  <div class="card prose" id="reader-content">
+    {{ lesson.theory|safe }}
+  </div>
+
+  <div id="word-popup" style="display:none;position:fixed;z-index:1000;background:#fff;border:1px solid #fce7f3;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.1);padding:14px;max-width:280px;">
+    <div style="font-weight:700;color:#1f2937;" id="selected-word"></div>
+    <div style="margin-top:6px;color:#334155;" id="translated-word">Переклад...</div>
+    <div style="margin-top:4px;color:#64748b;font-size:12px;" id="translated-alt"></div>
+    <button id="add-word-btn" class="btn btn-primary btn-sm" style="margin-top:10px;">Додати в словник</button>
+    <div id="word-message" style="margin-top:8px;font-size:12px;color:#64748b;"></div>
+  </div>
+</div>
+
+<div id="tools-panel" style="position:fixed;right:24px;top:140px;z-index:1100;background:#fff;border:1px solid #fce7f3;border-radius:14px;padding:10px 8px;box-shadow:0 10px 24px rgba(0,0,0,.08);display:flex;flex-direction:column;align-items:center;gap:8px;">
+  <div style="font-size:12px;font-weight:700;color:#475569;margin-bottom:2px;">Інструменти</div>
+  <button type="button" class="tool-btn" data-color="#fff59d" onclick="setBrushColor('#fff59d')" title="Жовтий олівець" style="width:34px;height:34px;border-radius:50%;border:2px solid #f1f5f9;background:#fff59d;cursor:pointer;"></button>
+  <button type="button" class="tool-btn" data-color="#bfdbfe" onclick="setBrushColor('#bfdbfe')" title="Синій олівець" style="width:34px;height:34px;border-radius:50%;border:2px solid #f1f5f9;background:#bfdbfe;cursor:pointer;"></button>
+  <button type="button" class="tool-btn" data-color="#bbf7d0" onclick="setBrushColor('#bbf7d0')" title="Зелений олівець" style="width:34px;height:34px;border:2px solid #f1f5f9;border-radius:50%;background:#bbf7d0;cursor:pointer;"></button>
+  <button type="button" id="eraser-toggle" onclick="toggleEraser()" title="Ластик" style="width:34px;height:34px;border-radius:10px;border:1px solid #e2e8f0;background:#f8fafc;cursor:pointer;font-size:11px;font-weight:900;">DEL</button>
+</div>
+
+<style>
+  .user-highlight {
+    border-radius: 6px;
+    padding: 0 1px;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+    background-image: linear-gradient(to bottom, transparent 35%, var(--hl-color, #fff59d) 35%, var(--hl-color, #fff59d) 88%, transparent 88%);
+  }
+  .reader-pencil {
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cg transform='rotate(-25 14 14)'%3E%3Crect x='10' y='4' width='8' height='14' rx='2' fill='%23f59e0b'/%3E%3Crect x='10' y='17' width='8' height='5' fill='%23fde68a'/%3E%3Cpolygon points='10,4 14,0 18,4' fill='%23334155'/%3E%3C/g%3E%3C/svg%3E") 4 24, text;
+  }
+  .reader-eraser {
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3E%3Cg transform='rotate(-25 15 15)'%3E%3Crect x='6' y='9' width='18' height='12' rx='3' fill='%23f8fafc' stroke='%2394a3b8' stroke-width='1.5'/%3E%3Crect x='15' y='9' width='9' height='12' rx='3' fill='%23fecdd3'/%3E%3C/g%3E%3C/svg%3E") 6 24, pointer;
+  }
+</style>
+
+<script>
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+  return '';
+}
+
+const popup = document.getElementById('word-popup');
+const selectedWordEl = document.getElementById('selected-word');
+const translatedWordEl = document.getElementById('translated-word');
+const translatedAltEl = document.getElementById('translated-alt');
+const addWordBtn = document.getElementById('add-word-btn');
+const wordMessageEl = document.getElementById('word-message');
+const eraserToggleBtn = document.getElementById('eraser-toggle');
+const toolButtons = document.querySelectorAll('.tool-btn');
+
+let currentWord = '';
+let currentTranslation = '';
+const reader = document.getElementById('reader-content');
+const storageKey = `text_marks_${{ lesson.id }}`;
+let eraserMode = false;
+let erasingNow = false;
+let activeColor = '#fff59d';
+reader.classList.add('reader-pencil');
+
+try {
+  const saved = localStorage.getItem(storageKey);
+  if (saved) reader.innerHTML = saved;
+} catch (e) {}
+
+reader.addEventListener('mouseup', async (event) => {
+  if (eraserMode) return;
+  const selectionObj = window.getSelection();
+  const selection = selectionObj.toString().trim();
+  const cleanWord = selection.replace(/[^A-Za-zА-Яа-яЇїІіЄєҐґ'-]/g, '');
+
+  if (selection && selection.length > 1) {
+    applyHighlight(activeColor);
+    try { localStorage.setItem(storageKey, reader.innerHTML); } catch (e) {}
+  }
+
+  if (!cleanWord || cleanWord.split(/\s+/).length > 1) {
+    if (!selection) popup.style.display = 'none';
+    return;
+  }
+  currentWord = cleanWord;
+  currentTranslation = '';
+  selectedWordEl.textContent = cleanWord;
+  translatedWordEl.textContent = 'Шукаю переклад...';
+  translatedAltEl.textContent = '';
+  wordMessageEl.textContent = '';
+  popup.style.left = `${event.clientX + 10}px`;
+  popup.style.top = `${event.clientY + 10}px`;
+  popup.style.display = 'block';
+
+  const response = await fetch("{% url 'translate_word' %}", {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': getCookie('csrftoken')
+    },
+    body: JSON.stringify({ word: cleanWord })
+  });
+  const data = await response.json();
+  if (data.ok) {
+    currentTranslation = data.translation;
+    translatedWordEl.textContent = data.translation;
+    if (data.alternatives && data.alternatives.length > 1) {
+      translatedAltEl.textContent = `Інші варіанти: ${data.alternatives.slice(1).join(', ')}`;
+    }
+  } else {
+    translatedWordEl.textContent = data.error || 'Помилка перекладу';
+    translatedAltEl.textContent = '';
+  }
+});
+
+addWordBtn.addEventListener('click', async () => {
+  if (!currentWord || !currentTranslation) return;
+  const response = await fetch("{% url 'add_personal_word' %}", {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': getCookie('csrftoken')
+    },
+    body: JSON.stringify({ word: currentWord, translation: currentTranslation })
+  });
+  let data = {};
+  try {
+    data = await response.json();
+  } catch (e) {
+    data = { error: 'Помилка відповіді сервера.' };
+  }
+  wordMessageEl.textContent = data.message || data.error || 'Готово';
+});
+
+function applyHighlight(color) {
+  const selection = window.getSelection();
+  if (!selection.rangeCount) return;
+  const range = selection.getRangeAt(0);
+  if (range.collapsed) return;
+  if (!reader.contains(range.commonAncestorContainer)) return;
+
+  const span = document.createElement('span');
+  span.className = 'user-highlight';
+  span.style.setProperty('--hl-color', color);
+  const extracted = range.extractContents();
+  span.appendChild(extracted);
+  range.insertNode(span);
+  selection.removeAllRanges();
+  try { localStorage.setItem(storageKey, reader.innerHTML); } catch (e) {}
+}
+
+function unwrapHighlight(highlight) {
+  if (!highlight) return;
+  const parent = highlight.parentNode;
+  while (highlight.firstChild) {
+    parent.insertBefore(highlight.firstChild, highlight);
+  }
+  parent.removeChild(highlight);
+}
+
+function eraseAtTarget(target) {
+  if (!target) return;
+  let node = target;
+  if (node.nodeType === 3) node = node.parentNode;
+  const highlight = node.closest ? node.closest('.user-highlight') : null;
+  unwrapHighlight(highlight);
+  try { localStorage.setItem(storageKey, reader.innerHTML); } catch (e) {}
+}
+
+function toggleEraser() {
+  eraserMode = !eraserMode;
+  eraserToggleBtn.style.background = eraserMode ? '#fee2e2' : '#f8fafc';
+  eraserToggleBtn.style.borderColor = eraserMode ? '#fda4af' : '#e2e8f0';
+  reader.classList.toggle('reader-eraser', eraserMode);
+  reader.classList.toggle('reader-pencil', !eraserMode);
+  if (eraserMode) popup.style.display = 'none';
+}
+
+function setBrushColor(color) {
+  activeColor = color;
+  if (eraserMode) toggleEraser();
+  toolButtons.forEach((btn) => {
+    const selected = btn.dataset.color === color;
+    btn.style.outline = selected ? '2px solid #0f172a' : 'none';
+    btn.style.outlineOffset = selected ? '1px' : '0';
+  });
+}
+
+reader.addEventListener('mousedown', (event) => {
+  if (!eraserMode) return;
+  erasingNow = true;
+  eraseAtTarget(event.target);
+});
+
+reader.addEventListener('mousemove', (event) => {
+  if (!eraserMode || !erasingNow) return;
+  eraseAtTarget(event.target);
+});
+
+document.addEventListener('mouseup', () => {
+  erasingNow = false;
+});
+
+document.addEventListener('keydown', (event) => {
+  if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'b') {
+    event.preventDefault();
+    applyHighlight(activeColor);
+  }
+});
+
+setBrushColor(activeColor);
+</script>
+{% endblock %}

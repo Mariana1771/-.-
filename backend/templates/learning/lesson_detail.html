@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}{{ lesson.title }} — Slovak.sk{% endblock %}
+
+{% block content %}
+<div class="container-sm" style="max-width: 900px; margin: 0 auto; padding: 20px;">
+
+    {% if cert_program_slug %}
+      <a href="{% url 'certificate_exam_path' cert_program_slug %}" style="text-decoration: none; color: #db2777; font-weight: 600; font-size: 14px;">
+          ← Назад до курсу сертифікації
+      </a>
+    {% else %}
+      <a href="{% url 'grammar_list' %}" style="text-decoration: none; color: #db2777; font-weight: 600; font-size: 14px;">
+          ← Назад до списку тем
+      </a>
+    {% endif %}
+
+    <div style="margin-top: 20px; margin-bottom: 30px;">
+        <span style="background: #fdf2f8; color: #db2777; padding: 5px 15px; border-radius: 20px; font-weight: 700;">
+            {{ lesson.level }}
+        </span>
+        <h1 style="font-size: 36px; font-weight: 800; color: #111827; margin-top: 10px;">{{ lesson.title }}</h1>
+    </div>
+
+    <div id="theoryContent" class="card lesson-theory prose" style="background: #fff; border-radius: 16px; padding: 30px; border: 1px solid #f3f4f6; margin-bottom: 40px;">
+        {{ lesson.theory|safe }}
+    </div>
+
+    <hr style="border: 0; border-top: 2px dashed #e5e7eb; margin-bottom: 40px;">
+
+    <div class="exercises-section">
+        <h2 style="font-size: 24px; font-weight: 700; color: #111827; margin-bottom: 20px; display: flex; align-items: center;">
+            <span style="background: #db2777; color: white; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 8px; margin-right: 12px; font-size: 11px; font-weight: 900;">EX</span>
+            Практичні вправи
+        </h2>
+
+        {% if exercises %}
+        <div style="background: #fff1f2; color: #9d174d; padding: 15px; border-radius: 12px; margin-bottom: 25px; border-left: 5px solid #db2777;">
+            Прочитали теорію? Тепер перевірте себе!
+        </div>
+        <div style="text-align: center; padding: 40px; background: #f9fafb; border-radius: 16px; border: 2px solid #f3f4f6;">
+            <p style="font-size: 18px; color: #4b5563; margin-bottom: 20px;">Доступно <strong>{{ exercises.count }}</strong> вправ</p>
+            <a href="{% url 'exercise' lesson.id %}" style="display: inline-block; background: #db2777; color: white; padding: 16px 45px; border-radius: 12px; font-size: 18px; font-weight: 700; text-decoration: none; box-shadow: 0 4px 15px rgba(219,39,119,0.3);">
+                Почати вправи →
+            </a>
+        </div>
+        {% else %}
+        <div style="text-align: center; padding: 30px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px;">
+            <p style="color: #6b7280; margin: 0;">Для цієї теми вправ поки що не додано.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+  .lesson-theory { overflow-wrap: anywhere; word-break: break-word; }
+  .lesson-theory .alpha-block { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 14px; line-height: 1.9; color:#111827; }
+  .lesson-theory .alpha-grid { display:grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+  .lesson-theory .alpha-card { border-radius:14px; padding:12px; border:1px solid #e5e7eb; background:#fff; }
+  .lesson-theory .alpha-card strong { display:block; margin-bottom: 8px; }
+  .lesson-theory .alpha-chip { display:inline-block; padding: 4px 8px; border-radius:10px; background:#f3f4f6; margin: 4px 6px 0 0; font-weight:800; }
+  @media (max-width: 700px) {
+    .lesson-theory { padding: 18px !important; font-size: 16px !important; }
+    .lesson-theory .alpha-grid { grid-template-columns: 1fr; }
+  }
+</style>
+{% endblock %}

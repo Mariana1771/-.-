@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% block title %}Іспит на сертифікат — Slovak.sk{% endblock %}
+
+{% block content %}
+<div class="container-sm" style="max-width: 760px;">
+  <div class="page-header" style="text-align:center;">
+    <h1 class="page-title">{{ program.title }}</h1>
+    <p class="page-sub">Програма → завдання → фінальний тест → сертифікат.</p>
+  </div>
+
+  <div class="card" style="margin-bottom:16px;">
+    <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-start;">
+      <div>
+        <div style="font-weight:900;color:#111827;">Ваш прогрес</div>
+        <div style="color:#6b7280;margin-top:6px;line-height:1.7;">
+          Умови: <strong>{{ state.required_lessons_percent }}%</strong> уроків A1 та фінальний тест <strong>{{ state.required_quiz_percent }}%</strong>+.
+        </div>
+        {% if not cert_paid %}
+          <div style="margin-top:10px;padding:10px 12px;border-radius:12px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;line-height:1.7;">
+            Уроки A1 — безкоштовні. Щоб здати фінальний іспит і згенерувати сертифікат, потрібно підтвердити оплату на сторінці «Сертифікати».
+            <div style="margin-top:10px;">
+          <a class="btn btn-outline" href="{% url 'certificates_page' %}">Перейти до оплати →</a>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+      <div style="min-width:220px;text-align:right;">
+        <div style="font-weight:900;color:#111827;">
+          {% if state.total_a1_lessons %}{{ state.completed_lessons }}/{{ state.total_a1_lessons }}{% else %}—{% endif %}
+        </div>
+        <div style="color:#9ca3af;font-size:12px;margin-top:4px;">уроки A1 завершено</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px;">
+    <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-start;">
+      <div>
+        <div style="font-weight:900;color:#111827;">Крок 1 — Практика у вправах</div>
+        <div style="color:#6b7280;margin-top:6px;line-height:1.7;">
+          Потрібно завершити <strong>{{ state.required_lessons }}</strong> уроків з курсу (вправи в кінці теми).
+        </div>
+        {% if state.program_lessons %}
+          <div style="margin-top:10px;display:grid;grid-template-columns:1fr;gap:8px;">
+            {% for pl in state.program_lessons %}
+              <a href="{% url 'lesson_detail' pl.lesson.id %}" style="display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px 12px;border:1px solid #f1f5f9;border-radius:12px;background:#fff;text-decoration:none;color:#111827;">
+                <div style="display:flex;gap:10px;align-items:center;">
+                  <div style="width:28px;height:28px;border-radius:8px;background:#fdf2f8;color:#db2777;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:12px;">{{ pl.order }}</div>
+                  <div style="font-weight:800;">{{ pl.lesson.title }}</div>
+                </div>
+                <div style="color:#9ca3af;font-weight:800;font-size:12px;">Відкрити →</div>
+              </a>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+      <div style="min-width:220px;text-align:right;">
+        <div style="font-weight:900;color:#111827;">{{ state.completed_lessons }}/{{ state.required_lessons }}</div>
+        {% if state.lessons_ok %}
+          <div style="color:#059669;font-weight:800;margin-top:4px;">Виконано</div>
+        {% else %}
+          <div style="color:#f97316;font-weight:800;margin-top:4px;">Ще потрібно</div>
+        {% endif %}
+        <div style="margin-top:10px;">
+          <a class="btn btn-outline" href="{% url 'grammar_list' %}">Перейти до уроків</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px;">
+    <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-start;">
+      <div>
+        <div style="font-weight:900;color:#111827;">Крок 2 — Фінальний тест</div>
+        <div style="color:#6b7280;margin-top:6px;line-height:1.7;">
+          Пройди Quiz і набери <strong>{{ state.required_quiz_percent }}%</strong> або більше.
+        </div>
+        {% if state.latest_quiz %}
+          <div style="color:#9ca3af;font-size:12px;margin-top:8px;">
+            Остання спроба: {{ state.latest_quiz_percent }}% ({{ state.latest_quiz.score }}/{{ state.latest_quiz.total }})
+          </div>
+        {% endif %}
+      </div>
+      <div style="min-width:220px;text-align:right;">
+        <div style="font-weight:900;color:#111827;">{{ state.latest_quiz_percent }}%</div>
+        {% if state.quiz_ok %}
+          <div style="color:#059669;font-weight:800;margin-top:4px;">Складено</div>
+        {% else %}
+          <div style="color:#f97316;font-weight:800;margin-top:4px;">Не складено</div>
+        {% endif %}
+        <div style="margin-top:10px;">
+          {% if cert_paid %}
+            <a class="btn btn-outline" href="{% url 'quiz' %}?level={{ program.level }}&final=1">Почати фінальний {{ program.level }} Quiz</a>
+          {% else %}
+            <a class="btn btn-outline" href="{% url 'certificates_page' %}">Розблокувати іспит →</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="font-weight:900;color:#111827;margin-bottom:8px;">Крок 3 — Сертифікат</div>
+    {% if state.all_ok and cert_paid %}
+      <div style="padding:12px 14px;border-radius:12px;background:#ecfdf5;border:1px solid #bbf7d0;color:#065f46;line-height:1.7;">
+        Вітаємо! Умови виконані. Тепер введіть імʼя та прізвище для сертифікату.
+      </div>
+      {% if enrollment.issue %}
+        <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;">
+          <a class="btn btn-primary" href="{% url 'certificate_document' program.slug %}">Відкрити сертифікат →</a>
+          <a class="btn btn-outline" href="{% url 'certificates_page' %}">Назад</a>
+        </div>
+      {% else %}
+        <form method="post" style="margin-top:12px;">
+          {% csrf_token %}
+          <div class="form-group" style="margin-bottom:10px;">
+            <label class="form-label" style="margin-bottom:6px;">Імʼя та прізвище</label>
+            <input class="form-input" type="text" name="full_name" placeholder="Напр. Іван Петренко" required value="{{ request.user.get_full_name|default:request.user.username }}">
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <button class="btn btn-primary" type="submit">Згенерувати сертифікат →</button>
+            <a class="btn btn-outline" href="{% url 'certificates_page' %}">Назад</a>
+          </div>
+        </form>
+      {% endif %}
+    {% elif state.all_ok and not cert_paid %}
+      <div style="padding:12px 14px;border-radius:12px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;line-height:1.7;">
+        Уроки пройдено. Залишилось розблокувати іспит/сертифікат оплатою.
+      </div>
+      <div style="margin-top:12px;">
+        <a class="btn btn-outline" href="{% url 'certificates_page' %}">Перейти до оплати →</a>
+      </div>
+    {% else %}
+      <div style="padding:12px 14px;border-radius:12px;background:#f8fafc;border:1px solid #e2e8f0;color:#475569;line-height:1.7;">
+        Заверши кроки 1–2, і тут зʼявиться кнопка для сертифікату.
+      </div>
+      <div style="margin-top:12px;">
+        <a class="btn btn-outline" href="{% url 'certificates_page' %}">Назад</a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

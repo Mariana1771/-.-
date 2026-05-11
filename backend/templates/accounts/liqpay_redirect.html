@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>Переадресація на LiqPay</title>
+</head>
+<body>
+  <p>Переадресація на LiqPay...</p>
+  <form id="liqpay-form" method="POST" action="{{ liqpay_checkout_url }}">
+    <input type="hidden" name="data" value="{{ data }}">
+    <input type="hidden" name="signature" value="{{ signature }}">
+  </form>
+  <script>
+    document.getElementById('liqpay-form').submit();
+  </script>
+</body>
+</html>

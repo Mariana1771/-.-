@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% block title %}Результат тесту рівня — Slovak.sk{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 40px auto; padding: 0 20px; text-align: center;">
+
+    {# Result is shown only after auth (guests are redirected to register). #}
+
+    <div style="font-size: 14px; font-weight: 900; color: #9ca3af; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;">
+        Результат тесту
+    </div>
+
+    <h1 style="font-size: 34px; font-weight: 800; color: #1f2937; margin-bottom: 8px;">
+        Твій рівень визначено!
+    </h1>
+    <p style="color: #6b7280; margin-bottom: 32px;">Ось твої результати тесту</p>
+
+    <div style="background: linear-gradient(135deg, #fdf2f8, #fff1f2); border: 2px solid #fce7f3; border-radius: 24px; padding: 32px; margin-bottom: 28px;">
+        <div style="font-size: 14px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;">
+            Рекомендований рівень
+        </div>
+        <div style="font-size: 52px; font-weight: 800; color: #db2777; margin-bottom: 8px;">
+            {{ determined_level }}
+        </div>
+        <div style="font-size: 18px; font-weight: 600; color: #374151;">
+            {{ recommendation }}
+        </div>
+    </div>
+
+    <!-- Прогрес по рівнях -->
+    <div style="background: white; border-radius: 20px; padding: 24px; margin-bottom: 24px; border: 1px solid #f3f4f6; text-align: left;">
+        <div style="font-size: 14px; font-weight: 700; color: #374151; margin-bottom: 18px;">Результати по рівнях:</div>
+
+        <div style="margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                <span style="font-size: 13px; font-weight: 600; color: #059669;">A1 — Початковий</span>
+                <span style="font-size: 13px; font-weight: 700; color: #059669;">{{ a1_pct }}%</span>
+            </div>
+            <div style="height: 8px; background: #f3f4f6; border-radius: 10px; overflow: hidden;">
+                <div style="width: {{ a1_pct }}%; height: 100%; background: #059669; border-radius: 10px;"></div>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                <span style="font-size: 13px; font-weight: 600; color: #0284c7;">A2 — Базовий</span>
+                <span style="font-size: 13px; font-weight: 700; color: #0284c7;">{{ a2_pct }}%</span>
+            </div>
+            <div style="height: 8px; background: #f3f4f6; border-radius: 10px; overflow: hidden;">
+                <div style="width: {{ a2_pct }}%; height: 100%; background: #0284c7; border-radius: 10px;"></div>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                <span style="font-size: 13px; font-weight: 600; color: #d97706;">B1 — Середній</span>
+                <span style="font-size: 13px; font-weight: 700; color: #d97706;">{{ b1_pct }}%</span>
+            </div>
+            <div style="height: 8px; background: #f3f4f6; border-radius: 10px; overflow: hidden;">
+                <div style="width: {{ b1_pct }}%; height: 100%; background: #d97706; border-radius: 10px;"></div>
+            </div>
+        </div>
+
+        <div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                <span style="font-size: 13px; font-weight: 600; color: #c2410c;">B2 — Вище середнього</span>
+                <span style="font-size: 13px; font-weight: 700; color: #c2410c;">{{ b2_pct|default:0 }}%</span>
+            </div>
+            <div style="height: 8px; background: #f3f4f6; border-radius: 10px; overflow: hidden;">
+                <div style="width: {{ b2_pct|default:0 }}%; height: 100%; background: #c2410c; border-radius: 10px;"></div>
+            </div>
+        </div>
+    </div>
+
+    {% if start_lesson %}
+    <div style="background: white; border-radius: 20px; padding: 20px 24px; margin-bottom: 24px; border: 1px solid #f3f4f6; text-align: left; display: flex; align-items: center; gap: 16px;">
+        <div style="width: 48px; height: 48px; background: #fff1f2; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; color:#db2777; flex-shrink: 0;">START</div>
+        <div>
+            <div style="font-size: 12px; color: #9ca3af; font-weight: 600; text-transform: uppercase; margin-bottom: 4px;">Рекомендуємо почати з</div>
+            <div style="font-size: 16px; font-weight: 700; color: #1f2937;">{{ start_lesson.title }}</div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if mistakes %}
+    <div style="background: white; border-radius: 20px; padding: 24px; margin-bottom: 24px; border: 1px solid #f3f4f6; text-align: left;">
+        <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:14px;">
+            <div style="font-size: 14px; font-weight: 800; color: #111827;">Твої помилки</div>
+            <div style="font-size: 12px; font-weight: 800; color: #9ca3af;">Неправильних: {{ mistakes|length }}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+            {% for m in mistakes %}
+            <div style="border:1px solid #f3f4f6;border-radius:14px;padding:12px 14px;">
+                <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;">
+                    <div style="font-weight:800;color:#1f2937;line-height:1.5;">{{ m.question }}</div>
+                    <span style="background:#fdf2f8;color:#db2777;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:800;">{{ m.level }}</span>
+                </div>
+                <div style="margin-top:8px;color:#6b7280;font-size:13px;line-height:1.7;">
+                    <div><strong style="color:#111827;">Твоя відповідь:</strong> {{ m.your }}</div>
+                    <div><strong style="color:#111827;">Правильно:</strong> {{ m.correct }}</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+        {% if start_lesson %}
+        {% if user.is_authenticated %}
+        <a href="{% url 'lesson_detail' start_lesson.id %}" style="
+            background: #db2777; color: white;
+            padding: 16px; border-radius: 14px;
+            text-decoration: none; font-weight: 700; font-size: 16px;
+            box-shadow: 0 4px 12px rgba(219,39,119,0.2);">
+            Почати навчання →
+        </a>
+        {% else %}
+        <a href="{% url 'register' %}" class="js-open-auth-modal" data-auth="register" data-next="{% url 'lesson_detail' start_lesson.id %}" style="
+            background: #db2777; color: white;
+            padding: 16px; border-radius: 14px;
+            text-decoration: none; font-weight: 700; font-size: 16px;
+            box-shadow: 0 4px 12px rgba(219,39,119,0.2);">
+            Зареєструватись, щоб почати →
+        </a>
+        {% endif %}
+        {% endif %}
+        <a href="{% url 'grammar_list' %}" style="
+            background: #f9fafb; color: #374151;
+            padding: 14px; border-radius: 14px;
+            text-decoration: none; font-weight: 600; font-size: 14px;
+            border: 1px solid #f3f4f6;">
+            Переглянути всі теми
+        </a>
+        <a href="{% url 'placement_test' %}" style="color: #9ca3af; font-size: 13px; text-decoration: none; padding: 8px;">
+            Пройти тест ще раз
+        </a>
+    </div>
+</div>
+{% endblock %}

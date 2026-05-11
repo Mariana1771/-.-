@@ -1,15 +1,6 @@
 #!/usr/bin/env python
-"""
-Обгортка: Django знаходиться в backend/.
-З кореня репо виконуй: python manage.py runserver
-"""
-from pathlib import Path
 import os
 import sys
-
-backend = Path(__file__).resolve().parent / 'backend'
-os.chdir(backend)
-sys.path.insert(0, str(backend))
 
 
 def main():

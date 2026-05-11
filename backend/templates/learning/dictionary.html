@@ -1,0 +1,286 @@
+{% extends "base.html" %}
+{% block title %}Словник — Slovak.sk{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 980px;">
+  <style>
+    .tabs { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-bottom:18px; }
+    .tab {
+      display:inline-flex; align-items:center; gap:8px;
+      padding:10px 16px; border-radius:999px;
+      border:1.5px solid var(--border);
+      background:#fff; color: var(--text-2);
+      font-weight:800; font-size:13px;
+      cursor:pointer; transition:.15s;
+    }
+    .tab:hover { border-color: var(--pink-200); background: var(--pink-50); color: var(--pink-600); }
+    .tab.active { background: var(--pink-500); border-color: var(--pink-500); color:#fff; }
+    .toolbar {
+      display:flex; gap:10px; align-items:center; justify-content:space-between;
+      flex-wrap:wrap; margin-bottom:12px;
+    }
+    .search {
+      width:min(520px, 100%);
+      padding:12px 14px;
+      border:1.5px solid var(--border);
+      border-radius:12px;
+      font-size:14px;
+      outline:none;
+      background:#fff;
+    }
+    .search:focus { border-color: var(--pink-300); box-shadow: 0 0 0 4px rgba(244,63,114,.08); }
+    .chip {
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 12px; border-radius:999px;
+      background:#fff; border:1.5px solid var(--border);
+      color: var(--text-2); font-weight:800; font-size:12px;
+      cursor:pointer; transition:.15s;
+    }
+    .chip.active { background: var(--pink-50); border-color: var(--pink-200); color: var(--pink-600); }
+    .mini { color: var(--text-3); font-size:12px; font-weight:700; }
+    .saved-word { transition:.15s; }
+    .saved-word:hover { border-color: var(--pink-200); box-shadow: 0 10px 24px rgba(244,63,114,.10); transform: translateY(-1px); }
+    .word-actions { display:flex; gap:8px; margin-top:10px; }
+    .icon-btn {
+      appearance:none; border:1px solid var(--border);
+      background:#fff; color: var(--text-2);
+      border-radius:10px; padding:8px 10px;
+      font-size:12px; font-weight:900; cursor:pointer;
+      transition:.15s;
+    }
+    .icon-btn:hover { border-color: var(--pink-200); background: var(--pink-50); color: var(--pink-600); }
+    .icon-btn.danger:hover { border-color: #fecaca; background:#fff1f2; color:#be123c; }
+    .toast {
+      position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%);
+      background: rgba(17,24,39,.92); color:#fff;
+      padding:10px 12px; border-radius: 12px;
+      font-size:13px; font-weight:700;
+      box-shadow: 0 12px 30px rgba(0,0,0,.25);
+      opacity:0; pointer-events:none; transition: opacity .15s, transform .15s;
+      z-index: 1200;
+      max-width: calc(100vw - 32px);
+      text-align:center;
+    }
+    .toast.show { opacity:1; transform: translateX(-50%) translateY(-4px); }
+  </style>
+  <div class="page-header" style="text-align:center;">
+    <h1 class="page-title">Словник</h1>
+    <p class="page-sub">По темах + твої виділені слова в одному місці.</p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" type="button" id="tabThemes" data-tab="themes">По темах</button>
+    <button class="tab" type="button" id="tabSaved" data-tab="saved">Виділені слова</button>
+  </div>
+
+  <div id="panelThemes">
+    <div class="card" style="margin-bottom:16px;">
+      <div style="font-weight:800;font-size:16px;margin-bottom:6px;">Словник по темах</div>
+      <div style="color:var(--text-2);font-size:13px;line-height:1.7;">
+        Обери тему-словник і переглядай слова в уроці.
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <input id="themeSearch" class="search" type="text" placeholder="Пошук теми (наприклад: одяг, місто, робота)...">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;">
+        <button class="chip active" type="button" data-level="all">Всі</button>
+        <button class="chip" type="button" data-level="A1">A1</button>
+        <button class="chip" type="button" data-level="A2">A2</button>
+        <button class="chip" type="button" data-level="B1">B1</button>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;" id="themesGrid">
+      {% for lesson in lessons %}
+        <a href="{% url 'lesson_detail' lesson.id %}" class="lesson-card" style="padding:18px;" data-level="{{ lesson.level }}" data-title="{{ lesson.title|lower }}">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;">
+            <div style="font-weight:800;color:#111827;line-height:1.35;">{{ lesson.title }}</div>
+            <span class="badge {% if lesson.level == 'A1' %}badge-a1{% elif lesson.level == 'A2' %}badge-a2{% elif lesson.level == 'B1' %}badge-b1{% else %}badge-b2{% endif %}">{{ lesson.level }}</span>
+          </div>
+          <div style="margin-top:8px;color:var(--text-3);font-size:12px;">Натисни, щоб відкрити</div>
+        </a>
+      {% empty %}
+        <div class="card" style="grid-column:1/-1;text-align:center;">
+          Словників по темах поки що не додано.
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div id="panelSaved" style="display:none;">
+    <div class="card" style="margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;">
+        <div>
+          <div style="font-weight:800;font-size:16px;margin-bottom:6px;">Виділені слова</div>
+          <div style="color:var(--text-2);font-size:13px;line-height:1.7;">
+            Слова, які ти зберіг у свій словник під час читання/навчання.
+          </div>
+        </div>
+        {% if user.is_authenticated %}
+          <div class="mini" id="savedCount">{{ personal_words|length }} слів</div>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if user.is_authenticated %}
+      <div class="card" style="padding:16px;margin-bottom:14px;">
+        <div style="display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;">
+          <input id="wordSearch" class="search" type="text" placeholder="Пошук слова...">
+          <div class="mini">Порада: натисни «Копіювати» або слово</div>
+        </div>
+      </div>
+
+      {% if personal_words %}
+        <div id="savedWordsGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;">
+          {% for w in personal_words %}
+            <div class="card saved-word" style="padding:14px 16px;" data-id="{{ w.id }}" data-text="{{ w.source_word|lower }} {{ w.translated_word|lower }}">
+              <div style="font-weight:900;color:#111827; cursor:pointer;" class="js-copy-word">{{ w.source_word }}</div>
+              <div style="color:var(--text-2);margin-top:4px;">{{ w.translated_word }}</div>
+              <div class="word-actions">
+                <button class="icon-btn js-copy" type="button">Копіювати</button>
+                <button class="icon-btn danger js-delete" type="button">Видалити</button>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="card" style="text-align:center;">
+          Поки немає виділених слів. Відкрий <a href="{% url 'texts' %}" style="color:var(--pink-500);font-weight:800;text-decoration:none;">тексти</a> і зберігай нові слова.
+        </div>
+      {% endif %}
+    {% else %}
+      <div class="card" style="text-align:center;">
+        Увійди або зареєструйся, щоб бачити свої виділені слова.<br>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px;">
+          <a class="btn btn-primary js-open-auth-modal" href="{% url 'register' %}" data-auth="register" data-next="{% url 'dictionary' %}">Реєстрація</a>
+          <a class="btn btn-outline js-open-auth-modal" href="{% url 'login' %}" data-auth="login" data-next="{% url 'dictionary' %}">Увійти</a>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<div class="toast" id="toast">Готово</div>
+
+<script>
+  (function () {
+    const tabThemes = document.getElementById('tabThemes');
+    const tabSaved = document.getElementById('tabSaved');
+    const panelThemes = document.getElementById('panelThemes');
+    const panelSaved = document.getElementById('panelSaved');
+    const search = document.getElementById('wordSearch');
+    const themeSearch = document.getElementById('themeSearch');
+    const themeCards = document.querySelectorAll('#themesGrid .lesson-card');
+    const levelChips = document.querySelectorAll('.chip[data-level]');
+    const cards = document.querySelectorAll('.saved-word');
+    const toast = document.getElementById('toast');
+    const savedCount = document.getElementById('savedCount');
+    let activeLevel = 'all';
+
+    function showToast(message) {
+      if (!toast) return;
+      toast.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(() => toast.classList.remove('show'), 1200);
+    }
+
+    function setActive(which) {
+      const themes = which === 'themes';
+      panelThemes.style.display = themes ? '' : 'none';
+      panelSaved.style.display = themes ? 'none' : '';
+      tabThemes.classList.toggle('active', themes);
+      tabSaved.classList.toggle('active', !themes);
+      try { localStorage.setItem('dictTab', which); } catch (e) {}
+      if (location.hash !== '#' + which) history.replaceState(null, '', '#' + which);
+    }
+
+    tabThemes && tabThemes.addEventListener('click', () => setActive('themes'));
+    tabSaved && tabSaved.addEventListener('click', () => setActive('saved'));
+
+    const init = (location.hash || '').replace('#', '');
+    let startTab = (init === 'saved' || init === 'themes') ? init : null;
+    if (!startTab) { try { startTab = localStorage.getItem('dictTab'); } catch (e) {} }
+    setActive(startTab === 'saved' ? 'saved' : 'themes');
+
+    if (search) {
+      search.addEventListener('input', () => {
+        const q = (search.value || '').toLowerCase().trim();
+        cards.forEach((c) => {
+          const t = (c.dataset.text || '').toLowerCase();
+          c.style.display = !q || t.includes(q) ? '' : 'none';
+        });
+      });
+    }
+
+    function applyThemeFilters() {
+      const q = (themeSearch?.value || '').toLowerCase().trim();
+      themeCards.forEach((c) => {
+        const lvl = c.dataset.level || '';
+        const title = c.dataset.title || '';
+        const okLevel = activeLevel === 'all' || lvl === activeLevel;
+        const okText = !q || title.includes(q);
+        c.style.display = (okLevel && okText) ? '' : 'none';
+      });
+    }
+    if (themeSearch) themeSearch.addEventListener('input', applyThemeFilters);
+    levelChips.forEach((chip) => {
+      chip.addEventListener('click', () => {
+        levelChips.forEach((c) => c.classList.remove('active'));
+        chip.classList.add('active');
+        activeLevel = chip.dataset.level || 'all';
+        applyThemeFilters();
+      });
+    });
+    applyThemeFilters();
+
+    function getCookie(name) {
+      const m = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+      return m ? m.pop() : '';
+    }
+
+    async function copyText(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast('Скопійовано: ' + text);
+      } catch (e) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        ta.remove();
+        showToast('Скопійовано: ' + text);
+      }
+    }
+
+    document.querySelectorAll('.saved-word .js-copy, .saved-word .js-copy-word').forEach((el) => {
+      el.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const card = el.closest('.saved-word');
+        const word = card?.querySelector('.js-copy-word')?.textContent?.trim() || '';
+        if (word) await copyText(word);
+      });
+    });
+
+    document.querySelectorAll('.saved-word .js-delete').forEach((btn) => {
+      btn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const card = btn.closest('.saved-word');
+        const id = card?.dataset?.id;
+        if (!id) return;
+        if (!confirm('Видалити це слово зі словника?')) return;
+        const res = await fetch(`/api/delete-word/${id}/`, {
+          method: 'POST',
+          headers: { 'X-CSRFToken': getCookie('csrftoken') }
+        });
+        if (!res.ok) return showToast('Не вдалося видалити');
+        card.remove();
+        showToast('Видалено');
+        if (savedCount) savedCount.textContent = document.querySelectorAll('.saved-word').length + ' слів';
+      });
+    });
+  })();
+</script>
+{% endblock %}

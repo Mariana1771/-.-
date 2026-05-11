@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div style="background:linear-gradient(135deg,#111827,#1f2937);border-radius:22px;padding:28px;color:#fff;margin-bottom:24px;">
+        <h2 style="margin: 0; font-weight: 800; font-size: 2rem;">Тексти для читання</h2>
+        <p style="margin:8px 0 0;opacity:.9;">Виділяй слова, перекладай і додавай у власний словник.</p>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px;">
+        {% for text in texts %}
+            <div class="card" style="border-radius: 18px; border: 1px solid #f0d7e3; box-shadow: 0 10px 24px rgba(15,23,42,0.08); transition: transform 0.2s;">
+                <div style="display:flex;flex-direction:column;height:100%;">
+                    <div class="mb-2">
+                        <span class="badge" style="background-color: #fff1f6; color: #db2777; border: 1px solid #f9c9dc;">
+                            Рівень {{ text.level }}
+                        </span>
+                    </div>
+                    <h3 style="color: #111827; font-weight: 800; font-size:20px;">{{ text.title }}</h3>
+                    <p style="color:#6b7280; font-size:14px; margin-top:8px;">
+                        Опрацюйте текст та виконайте вправи для покращення розуміння мови.
+                    </p>
+                    <div style="margin-top:auto;">
+                        <a href="/texts/{{ text.id }}/" class="btn btn-primary" style="width:100%; justify-content:center; border-radius: 10px; font-weight: 700;">
+                            Читати текст
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+        <div style="grid-column:1/-1; text-align:center;">
+            <div class="p-5" style="background: #fdf2f8; border-radius: 15px; border: 1px dashed #db2777;">
+                <p style="color: #db2777; margin: 0;">Наразі тексти у цьому розділі відсутні.</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

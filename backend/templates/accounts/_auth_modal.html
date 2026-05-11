@@ -1,0 +1,65 @@
+<div id="siteAuthBackdrop" class="site-auth-backdrop" aria-hidden="true">
+  <div class="site-auth-dialog" role="dialog" aria-modal="true" aria-labelledby="siteAuthTitle">
+    <button type="button" class="site-auth-close" id="siteAuthClose" aria-label="Закрити">×</button>
+    <div class="site-auth-tabs">
+      <button type="button" class="site-auth-tab is-active" data-auth-tab="login" id="siteAuthTitle">Увійти</button>
+      <button type="button" class="site-auth-tab" data-auth-tab="register">Реєстрація</button>
+    </div>
+
+    <div id="siteAuthPanelLogin" class="site-auth-panel">
+      <p class="site-auth-lead">Вітаємо назад!</p>
+      <div id="modalLoginErr" class="site-auth-alert" hidden></div>
+      <form id="modalLoginForm" method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="" id="modalLoginNext">
+        <div class="form-group">
+          <label class="form-label" for="modalLoginUser">Логін</label>
+          <input id="modalLoginUser" type="text" name="username" class="form-input" autocomplete="username" placeholder="твій_логін" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="modalLoginPass">Пароль</label>
+          <input id="modalLoginPass" type="password" name="password" class="form-input" autocomplete="current-password" placeholder="••••••" required>
+        </div>
+        <button type="submit" class="btn btn-primary site-auth-submit">Увійти</button>
+      </form>
+      <p class="site-auth-switch">
+        Немає акаунту?
+        <button type="button" class="site-auth-linkish" data-auth-tab-switch="register">Зареєструватися</button>
+      </p>
+    </div>
+
+    <div id="siteAuthPanelRegister" class="site-auth-panel" hidden>
+      <p class="site-auth-lead">Створи акаунт і зберігай прогрес</p>
+      <div id="modalRegisterGlobalErr" class="site-auth-alert" hidden></div>
+      <form id="modalRegisterForm" method="post" action="{% url 'register' %}">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="" id="modalRegisterNext">
+        <div class="form-group">
+          <label class="form-label" for="modalRegName">Ім'я</label>
+          <input id="modalRegName" type="text" name="name" class="form-input" placeholder="Як тебе звати?" autocomplete="given-name">
+          <div id="err_name" class="form-error"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="modalRegUser">Логін</label>
+          <input id="modalRegUser" type="text" name="username" class="form-input" autocomplete="username" placeholder="латинські літери і цифри">
+          <div id="err_username" class="form-error"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="modalRegPass">Пароль</label>
+          <input id="modalRegPass" type="password" name="password" class="form-input" autocomplete="new-password" placeholder="мінімум 6 символів">
+          <div id="err_password" class="form-error"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="modalRegPass2">Повтори пароль</label>
+          <input id="modalRegPass2" type="password" name="password2" class="form-input" autocomplete="new-password" placeholder="••••••">
+          <div id="err_password2" class="form-error"></div>
+        </div>
+        <button type="submit" class="btn btn-primary site-auth-submit">Зареєструватись</button>
+      </form>
+      <p class="site-auth-switch">
+        Вже є акаунт?
+        <button type="button" class="site-auth-linkish" data-auth-tab-switch="login">Увійти</button>
+      </p>
+    </div>
+  </div>
+</div>

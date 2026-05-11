@@ -1,0 +1,598 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Навчання — Slovak.sk{% endblock %}
+
+{% block extra_css %}
+<style>
+  .hero {
+    background: linear-gradient(135deg, #f43f72 0%, #fb7185 55%, #f9a8d4 100%);
+    border-radius: 26px;
+    padding: 30px;
+    color: #fff;
+    box-shadow: 0 20px 42px rgba(var(--accent-rgb), .24);
+    margin-bottom: 26px;
+    text-shadow: 0 1px 1px rgba(0,0,0,.06);
+  }
+  .grammar-row {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+    align-items: start;
+  }
+  .level-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all .22s ease;
+    min-height: 160px;
+  }
+  .level-card.active {
+    border-color: var(--pink-300);
+    box-shadow: 0 16px 36px rgba(var(--accent-rgb), .14);
+    transform: translateY(-2px);
+  }
+  .level-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 36px rgba(var(--accent-rgb), .14);
+    border-color: var(--pink-200);
+  }
+  .level-cat-img {
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 12px;
+    border: 2px solid #fff;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+  }
+  .level-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+  .level-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: #111827;
+    display: block;
+    margin-bottom: 8px;
+  }
+  .lessons-panel {
+    margin-top: 18px;
+    padding: 18px;
+    border-radius: 22px;
+    background: rgba(255,255,255,.92);
+    border: 1px solid var(--border);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+  }
+  .lessons-head {
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .lessons-title {
+    font-size: 18px;
+    font-weight: 900;
+    color: #111827;
+    letter-spacing: -.2px;
+  }
+  .lessons-sub {
+    color: var(--text-2);
+    font-size: 13px;
+    line-height: 1.7;
+    margin-top: 2px;
+  }
+  .lessons-search {
+    min-width: 220px;
+    flex: 0 0 260px;
+  }
+  .lessons-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+  }
+  .lesson-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px;
+    background: var(--pink-50);
+    border: 1px solid var(--pink-100);
+    border-radius: 10px;
+    text-decoration: none;
+    color: #18202f;
+    font-size: 13px;
+    font-weight: 600;
+    transition: 0.2s;
+    min-height: 46px;
+  }
+  .lesson-item:hover {
+    background: var(--pink-100);
+    border-color: var(--pink-300);
+  }
+  .lesson-item.locked {
+    opacity: 0.72;
+    cursor: pointer;
+    background: #f8fafc;
+    border-color: #e2e8f0;
+  }
+  .lesson-num {
+    width: 20px;
+    height: 20px;
+    background: var(--pink-100);
+    color: var(--pink-600);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+  }
+  @media (max-width: 900px) {
+    .lessons-grid { grid-template-columns: 1fr; }
+    .lessons-search { flex: 1 1 auto; min-width: 0; }
+  }
+
+  /* Lesson carousel (horizontal swipe) */
+  .lessons-carousel {
+    position: relative;
+  }
+  .lessons-track {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding: 6px 2px 14px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+  .lessons-track::-webkit-scrollbar { height: 10px; }
+  .lessons-track::-webkit-scrollbar-thumb { background: rgba(var(--accent-rgb),.18); border-radius: 999px; }
+  .lessons-track::-webkit-scrollbar-track { background: transparent; }
+  .lesson-card {
+    flex: 0 0 320px;
+    scroll-snap-align: start;
+    background: var(--pink-50);
+    border: 1px solid var(--pink-100);
+    border-radius: 16px;
+    padding: 14px 14px;
+    text-decoration: none;
+    color: #18202f;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+    transition: .15s;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 92px;
+  }
+  .lesson-card:hover { transform: translateY(-2px); border-color:var(--pink-300); background:var(--pink-100); }
+  .lesson-card.locked { opacity:.72; background:#f8fafc; border-color:#e2e8f0; box-shadow:none; }
+  .lesson-top { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .lesson-pill {
+    display:inline-flex; align-items:center; justify-content:center;
+    width: 28px; height: 28px;
+    border-radius: 999px;
+    background:var(--pink-100); color:var(--pink-600);
+    font-weight: 900; font-size: 12px;
+    flex: 0 0 auto;
+  }
+  .lesson-badges { display:flex; gap:8px; align-items:center; }
+  .badge-mini { font-size: 12px; font-weight: 900; color:#9ca3af; }
+  .badge-ok { color:#16a34a; }
+
+  .lesson-name {
+    font-weight: 900;
+    font-size: 14px;
+    line-height: 1.35;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .lessons-nav {
+    position:absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 38px;
+    height: 38px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,.92);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.10);
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 4;
+  }
+  .lessons-nav.left { left: -10px; }
+  .lessons-nav.right { right: -10px; }
+  @media (min-width: 901px) {
+    .lessons-nav { display:flex; }
+  }
+  @media (max-width: 420px) {
+    .lesson-card { flex-basis: 86%; }
+  }
+
+  .a1-style { background: #d1fae5; color: #059669; }
+  .a2-style { background: #e0f2fe; color: #0284c7; }
+  .b1-style { background: #fef3c7; color: #d97706; }
+  .b2-style { background: #ffedd5; color: #c2410c; }
+  .tools-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 22px;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @media (max-width: 900px) {
+    .grammar-row, .tools-grid { grid-template-columns: 1fr; }
+    .hero { padding: 22px; }
+  }
+
+  /* levels stay as a simple grid (no horizontal carousel) */
+  .premium-modal-backdrop { position: fixed; inset: 0; background: rgba(17, 24, 39, .45); backdrop-filter: blur(4px); display:none; align-items:center; justify-content:center; padding: 16px; z-index: 1000; }
+  .premium-modal { width: min(560px, 100%); background: #fff; border: 1px solid #f3f4f6; border-radius: 22px; box-shadow: 0 30px 80px rgba(0,0,0,.20); padding: 18px; }
+  .premium-modal h3 { font-size: 22px; margin: 0 0 6px; color:#111827; font-weight: 900; }
+  .premium-modal p { margin: 0 0 14px; color: #6b7280; line-height: 1.75; }
+  .premium-modal .row { display:flex; gap: 10px; flex-wrap: wrap; }
+  .premium-modal .x { appearance:none; border:none; background:transparent; cursor:pointer; color: #6b7280; font-weight: 900; font-size: 18px; line-height: 1; padding: 6px 10px; border-radius: 10px; }
+  .premium-modal .x:hover { background: #f9fafb; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-bottom: 60px;">
+
+  {% if not user.is_authenticated %}
+  <div class="card" style="margin-bottom:18px;background:linear-gradient(135deg, rgba(var(--accent-rgb),.06), rgba(255,255,255,.94));">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;">
+      <div style="min-width:260px;">
+        <div style="font-weight:950;font-size:18px;color:#111827;">Граматика доступна без реєстрації</div>
+        <div style="color:var(--text-2);font-size:13px;line-height:1.75;margin-top:6px;">
+          Проходь A1 як гість. А щоб бачити результат тесту, зберігати прогрес і мати статистику — потрібен акаунт.
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+        <a class="btn btn-outline" href="{% url 'placement_test' %}">Тест рівня</a>
+        <a class="btn btn-primary js-open-auth-modal" href="{% url 'register' %}" data-auth="register" data-next="{% url 'grammar_list' %}">Реєстрація</a>
+        <a class="btn btn-ghost js-open-auth-modal" href="{% url 'login' %}" data-auth="login" data-next="{% url 'grammar_list' %}">Увійти</a>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:14px;">
+      <div style="border:1px solid var(--border);border-radius:16px;background:#fff;padding:12px 14px;">
+        <div style="font-size:11px;font-weight:900;color:var(--text-3);text-transform:uppercase;letter-spacing:.8px;">Після реєстрації</div>
+        <div style="margin-top:6px;font-weight:900;color:#111827;">Збереження прогресу</div>
+        <div style="margin-top:2px;color:var(--text-2);font-size:12px;line-height:1.6;">уроки, XP, завершення</div>
+      </div>
+      <div style="border:1px solid var(--border);border-radius:16px;background:#fff;padding:12px 14px;">
+        <div style="font-size:11px;font-weight:900;color:var(--text-3);text-transform:uppercase;letter-spacing:.8px;">Після реєстрації</div>
+        <div style="margin-top:6px;font-weight:900;color:#111827;">Статистика</div>
+        <div style="margin-top:2px;color:var(--text-2);font-size:12px;line-height:1.6;">результати тестів і прогрес</div>
+      </div>
+      <div style="border:1px solid var(--border);border-radius:16px;background:#fff;padding:12px 14px;">
+        <div style="font-size:11px;font-weight:900;color:var(--text-3);text-transform:uppercase;letter-spacing:.8px;">Після реєстрації</div>
+        <div style="margin-top:6px;font-weight:900;color:#111827;">Сертифікати</div>
+        <div style="margin-top:2px;color:var(--text-2);font-size:12px;line-height:1.6;">програма + іспит + PDF</div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+  
+  <div class="hero">
+    <h1 style="font-weight: 900; font-size: 40px; margin:0;">Навчання</h1>
+    <p style="opacity:.95; margin-top:8px; font-size:16px;">Обирай рівень і прокачуй словацьку щодня.</p>
+    {% if not has_premium %}
+      <p style="background:rgba(255,255,255,.2);padding:8px 12px;border-radius:10px;display:inline-block;margin-top:8px;">Безкоштовно: A1 (для всіх) + A2 (після реєстрації). B1/B2 — Premium.</p>
+    {% endif %}
+  </div>
+
+  <div class="grammar-row">
+    
+    <div class="level-card" data-level="a1" onclick="showLevel('a1')">
+      <img src="{% static 'img/cat.jpg' %}" class="level-cat-img" alt="A1">
+      <div>
+        <span class="level-badge a1-style">A1</span>
+        <span class="level-title">Рівень A1</span>
+      </div>
+    </div>
+
+    <div class="level-card" data-level="a2" onclick="{% if user.is_authenticated %}showLevel('a2'){% else %}if(window.openAuthModal){window.openAuthModal('register','{% url 'grammar_list' %}');}{% endif %}">
+      <img src="{% static 'img/cat2.jpg' %}" class="level-cat-img" alt="A2">
+      <div>
+        <span class="level-badge a2-style">A2</span>
+        <span class="level-title">Рівень A2</span>
+      </div>
+    </div>
+
+    <div class="level-card" data-level="b1" onclick="{% if has_premium %}showLevel('b1'){% else %}openPremiumModal('Рівень B1 доступний тільки з Premium.') {% endif %}">
+      <img src="{% static 'img/cat3.jpg' %}" class="level-cat-img" alt="B1">
+      <div>
+        <span class="level-badge b1-style">B1</span>
+        <span class="level-title">Рівень B1</span>
+      </div>
+    </div>
+
+    <div class="level-card" data-level="b2" onclick="{% if has_premium %}showLevel('b2'){% else %}openPremiumModal('Рівень B2 доступний тільки з Premium.') {% endif %}">
+      <img src="{% static 'img/cat3.jpg' %}" class="level-cat-img" alt="B2">
+      <div>
+        <span class="level-badge b2-style">B2</span>
+        <span class="level-title">Рівень B2</span>
+      </div>
+    </div>
+    
+
+  </div>
+
+  <div class="lessons-panel" id="lessonsPanel">
+    <div class="lessons-head">
+      <div>
+        <div class="lessons-title" id="lessonsTitle">Уроки</div>
+        <div class="lessons-sub" id="lessonsSub">Обери тему та почни з теорії.</div>
+      </div>
+      <div class="lessons-search">
+        <input class="form-input" id="lessonSearch" type="text" placeholder="Пошук по уроках..." autocomplete="off">
+      </div>
+    </div>
+
+    <div id="panel-a1" class="level-panel">
+      <div class="lessons-carousel">
+        <button class="lessons-nav left" type="button" aria-label="Назад" onclick="scrollLessons(-1)"><span style="font-weight:900;">‹</span></button>
+        <button class="lessons-nav right" type="button" aria-label="Вперед" onclick="scrollLessons(1)"><span style="font-weight:900;">›</span></button>
+        <div class="lessons-track">
+        {% for lesson in a1_lessons %}
+        <a href="{% url 'lesson_detail' lesson.id %}" class="lesson-card" data-title="{{ lesson.title|lower }}">
+          <div class="lesson-top">
+            <span class="lesson-pill">{{ forloop.counter }}</span>
+            <span class="lesson-badges">
+              {% if lesson.id in completed_ids %}<span class="badge-mini badge-ok">✓</span>{% endif %}
+            </span>
+          </div>
+          <div class="lesson-name">{{ lesson.title }}</div>
+        </a>
+        {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div id="panel-a2" class="level-panel" style="display:none;">
+      <div class="lessons-carousel">
+        <button class="lessons-nav left" type="button" aria-label="Назад" onclick="scrollLessons(-1)"><span style="font-weight:900;">‹</span></button>
+        <button class="lessons-nav right" type="button" aria-label="Вперед" onclick="scrollLessons(1)"><span style="font-weight:900;">›</span></button>
+        <div class="lessons-track">
+        {% for lesson in a2_lessons %}
+        <a href="{% url 'lesson_detail' lesson.id %}" class="lesson-card {% if not user.is_authenticated %}locked js-open-auth-modal{% endif %}" {% if not user.is_authenticated %}data-auth="register" data-next="{% url 'lesson_detail' lesson.id %}"{% endif %} data-title="{{ lesson.title|lower }}">
+          <div class="lesson-top">
+            <span class="lesson-pill">{{ forloop.counter }}</span>
+            <span class="lesson-badges">
+              {% if lesson.id in completed_ids %}<span class="badge-mini badge-ok">✓</span>{% endif %}
+              {% if not user.is_authenticated %}<span class="badge-mini">Реєстрація</span>{% endif %}
+            </span>
+          </div>
+          <div class="lesson-name">{{ lesson.title }}</div>
+        </a>
+        {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div id="panel-b1" class="level-panel" style="display:none;">
+      <div class="lessons-carousel">
+        <button class="lessons-nav left" type="button" aria-label="Назад" onclick="scrollLessons(-1)"><span style="font-weight:900;">‹</span></button>
+        <button class="lessons-nav right" type="button" aria-label="Вперед" onclick="scrollLessons(1)"><span style="font-weight:900;">›</span></button>
+        <div class="lessons-track">
+        {% for lesson in b1_lessons %}
+        <a href="{% url 'lesson_detail' lesson.id %}" class="lesson-card {% if not has_premium %}locked js-premium-locked{% endif %}" data-title="{{ lesson.title|lower }}">
+          <div class="lesson-top">
+            <span class="lesson-pill">{{ forloop.counter }}</span>
+            <span class="lesson-badges">
+              {% if lesson.id in completed_ids %}<span class="badge-mini badge-ok">✓</span>{% endif %}
+              {% if not has_premium %}<span class="badge-mini">Premium</span>{% endif %}
+            </span>
+          </div>
+          <div class="lesson-name">{{ lesson.title }}</div>
+        </a>
+        {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div id="panel-b2" class="level-panel" style="display:none;">
+      <div class="lessons-carousel">
+        <button class="lessons-nav left" type="button" aria-label="Назад" onclick="scrollLessons(-1)"><span style="font-weight:900;">‹</span></button>
+        <button class="lessons-nav right" type="button" aria-label="Вперед" onclick="scrollLessons(1)"><span style="font-weight:900;">›</span></button>
+        <div class="lessons-track">
+        {% for lesson in b2_lessons %}
+        <a href="{% url 'lesson_detail' lesson.id %}" class="lesson-card {% if not has_premium %}locked js-premium-locked{% endif %}" data-title="{{ lesson.title|lower }}">
+          <div class="lesson-top">
+            <span class="lesson-pill">{{ forloop.counter }}</span>
+            <span class="lesson-badges">
+              {% if lesson.id in completed_ids %}<span class="badge-mini badge-ok">✓</span>{% endif %}
+              {% if not has_premium %}<span class="badge-mini">Premium</span>{% endif %}
+            </span>
+          </div>
+          <div class="lesson-name">{{ lesson.title }}</div>
+        </a>
+        {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top: 36px;">
+    <h2 style="text-align: center; font-weight: 900; color: #1e293b; margin-bottom: 16px;">Інші матеріали</h2>
+    
+    <div class="tools-grid">
+      
+      <a href="/dictionary/" style="text-decoration: none;">
+        <div class="level-card" style="display: flex; align-items: center; text-align: left; padding: 25px; gap: 20px;">
+       
+          <div>
+            <h3 style="margin: 0; font-size: 20px; color: #1e293b; font-weight: 800;">Словник</h3>
+            <p style="margin: 3px 0 0; color: #64748b; font-size: 13px;">Вчи нові слова</p>
+          </div>
+        </div>
+      </a>
+
+      <a href="/texts/" style="text-decoration: none;">
+        <div class="level-card" style="display: flex; align-items: center; text-align: left; padding: 25px; gap: 20px;">
+    
+          <div>
+            <h3 style="margin: 0; font-size: 20px; color: #1e293b; font-weight: 800;">Тексти</h3>
+            <p style="margin: 3px 0 0; color: #64748b; font-size: 13px;">Читай словацьку</p>
+          </div>
+        </div>
+      </a>
+
+    </div>
+  </div>
+
+</div>
+
+<div class="premium-modal-backdrop" id="premiumBackdrop" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="premium-modal" role="document">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;">
+      <div>
+        <h3>Premium доступ</h3>
+        <p id="premiumModalText">Цей рівень доступний тільки з Premium.</p>
+      </div>
+      <button class="x" type="button" id="premiumClose" aria-label="Закрити">X</button>
+    </div>
+    <div style="background:var(--pink-50);border:1px solid var(--pink-200);border-radius:16px;padding:12px 14px;margin-bottom:12px;">
+      <div style="font-weight:900;color:#9d174d;">Що відкриває Premium</div>
+      <div style="color:#7a5c67;font-size:13px;line-height:1.7;margin-top:4px;">
+        Рівні A2, B1 та B2, більше тем і вправ. Оплата через Stripe.
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:12px;">
+      <div style="border:1px solid #f3f4f6;border-radius:16px;padding:10px 12px;background:#fff;">
+        <div style="font-size:11px;font-weight:900;color:#9ca3af;text-transform:uppercase;letter-spacing:.8px;">На місяць</div>
+        <div style="font-size:18px;font-weight:900;color:#111827;margin-top:2px;">{{ premium_price_uah }} грн</div>
+      </div>
+      <div style="border:1px solid #f3f4f6;border-radius:16px;padding:10px 12px;background:#fff;">
+        <div style="font-size:11px;font-weight:900;color:#9ca3af;text-transform:uppercase;letter-spacing:.8px;">На 3 місяці</div>
+        <div style="font-size:18px;font-weight:900;color:#111827;margin-top:2px;">{{ premium_price_3m_uah }} грн</div>
+      </div>
+      <div style="border:1px solid #f3f4f6;border-radius:16px;padding:10px 12px;background:#fff;">
+        <div style="font-size:11px;font-weight:900;color:#9ca3af;text-transform:uppercase;letter-spacing:.8px;">На рік</div>
+        <div style="font-size:18px;font-weight:900;color:#111827;margin-top:2px;">{{ premium_price_year_uah }} грн</div>
+      </div>
+    </div>
+    <div class="row">
+      <a class="btn btn-primary" href="{% url 'premium_page' %}" style="text-decoration:none;">Перейти до оплати</a>
+      <button class="btn btn-ghost" type="button" id="premiumLater">Пізніше</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function scrollLessons(dir) {
+    const visiblePanel = Array.from(document.querySelectorAll('.level-panel')).find((p) => p.style.display !== 'none');
+    if (!visiblePanel) return;
+    const track = visiblePanel.querySelector('.lessons-track');
+    if (!track) return;
+    const card = track.querySelector('.lesson-card');
+    const step = (card ? (card.getBoundingClientRect().width + 12) : 320) * 1.2;
+    track.scrollBy({ left: dir * step, behavior: 'smooth' });
+  }
+
+  function showLevel(level) {
+    document.querySelectorAll('.level-panel').forEach((p) => (p.style.display = 'none'));
+    const panel = document.getElementById('panel-' + level);
+    if (panel) panel.style.display = 'block';
+
+    document.querySelectorAll('.level-card').forEach((c) => c.classList.remove('active'));
+    const active = document.querySelector(`.level-card[data-level="${level}"]`);
+    if (active) active.classList.add('active');
+
+    const title = document.getElementById('lessonsTitle');
+    const sub = document.getElementById('lessonsSub');
+    const map = {
+      a1: ['Уроки A1', 'Безкоштовно для всіх. Почни з першої теми.'],
+      a2: ['Уроки A2', 'Безкоштовно після реєстрації.'],
+      b1: ['Уроки B1', 'Доступно з Premium.'],
+      b2: ['Уроки B2', 'Доступно з Premium.'],
+    };
+    if (title && sub && map[level]) {
+      title.textContent = map[level][0];
+      sub.textContent = map[level][1];
+    }
+
+    const search = document.getElementById('lessonSearch');
+    if (search) search.value = '';
+    filterLessons('');
+    const lp = document.getElementById('lessonsPanel');
+    if (lp) lp.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function filterLessons(q) {
+    const query = (q || '').trim().toLowerCase();
+    const visiblePanel = Array.from(document.querySelectorAll('.level-panel')).find((p) => p.style.display !== 'none');
+    if (!visiblePanel) return;
+    visiblePanel.querySelectorAll('.lesson-card').forEach((a) => {
+      const t = (a.getAttribute('data-title') || '').toLowerCase();
+      a.style.display = (!query || t.includes(query)) ? 'flex' : 'none';
+    });
+  }
+
+  function openPremiumModal(message) {
+    const backdrop = document.getElementById('premiumBackdrop');
+    const text = document.getElementById('premiumModalText');
+    if (text && message) text.textContent = message;
+    backdrop.style.display = 'flex';
+    backdrop.setAttribute('aria-hidden', 'false');
+  }
+
+  function closePremiumModal() {
+    const backdrop = document.getElementById('premiumBackdrop');
+    backdrop.style.display = 'none';
+    backdrop.setAttribute('aria-hidden', 'true');
+  }
+
+  (function () {
+    const backdrop = document.getElementById('premiumBackdrop');
+    const closeBtn = document.getElementById('premiumClose');
+    const laterBtn = document.getElementById('premiumLater');
+
+    if (!backdrop || !closeBtn || !laterBtn) return;
+
+    backdrop.addEventListener('click', (e) => {
+      if (e.target === backdrop) closePremiumModal();
+    });
+    closeBtn.addEventListener('click', closePremiumModal);
+    laterBtn.addEventListener('click', closePremiumModal);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closePremiumModal();
+    });
+
+    document.querySelectorAll('.js-premium-locked').forEach((a) => {
+      a.addEventListener('click', (e) => {
+        // don't navigate to lesson; show premium modal instead
+        e.preventDefault();
+        openPremiumModal('Ця тема доступна тільки з Premium.');
+      });
+    });
+
+    const search = document.getElementById('lessonSearch');
+    if (search) {
+      search.addEventListener('input', () => filterLessons(search.value));
+    }
+
+    // default view
+    showLevel('a1');
+  })();
+</script>
+{% endblock %}

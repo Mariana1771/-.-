@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}Реєстрація — Slovak.sk{% endblock %}
+{% block content %}
+<div class="container-sm" style="padding-top:60px;">
+  <div style="text-align:center;margin-bottom:32px;">
+    <a href="{% url 'home' %}" style="font-family:'Playfair Display',serif;font-size:22px;color:var(--pink-500);text-decoration:none;">Slovak.sk</a>
+    <h1 style="font-size:26px;font-weight:700;margin-top:16px;">Створи акаунт</h1>
+    <p style="color:var(--text-2);margin-top:6px;">Зберігай прогрес і статистику</p>
+  </div>
+
+  <div class="card">
+    <form method="post">
+      {% csrf_token %}
+      {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+
+      <div class="form-group">
+        <label class="form-label">Ім'я</label>
+        <input type="text" name="name" class="form-input" value="{{ form.name|default:'' }}" placeholder="Як тебе звати?" autofocus>
+        {% if errors.name %}<div class="form-error">{{ errors.name }}</div>{% endif %}
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Логін</label>
+        <input type="text" name="username" class="form-input" value="{{ form.username|default:'' }}" placeholder="латинські літери і цифри">
+        {% if errors.username %}<div class="form-error">{{ errors.username }}</div>{% endif %}
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Пароль</label>
+        <input type="password" name="password" class="form-input" placeholder="мінімум 6 символів">
+        {% if errors.password %}<div class="form-error">{{ errors.password }}</div>{% endif %}
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Повтори пароль</label>
+        <input type="password" name="password2" class="form-input" placeholder="••••••">
+        {% if errors.password2 %}<div class="form-error">{{ errors.password2 }}</div>{% endif %}
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px;">Зареєструватись</button>
+    </form>
+
+    <hr class="divider">
+    <p style="text-align:center;font-size:14px;color:var(--text-2);">
+      Вже є акаунт?
+      <a href="{% url 'login' %}" class="js-open-auth-modal" data-auth="login" style="color:var(--pink-500);font-weight:600;">Увійти</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

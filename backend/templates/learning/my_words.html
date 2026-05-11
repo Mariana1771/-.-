@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+{% block title %}Мій словник — Slovak.sk{% endblock %}
+
+{% block extra_css %}
+<style>
+.word-card {
+    background: white;
+    border: 1px solid #f3f4f6;
+    border-radius: 16px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: all 0.2s;
+    margin-bottom: 10px;
+}
+.word-card:hover { border-color: #fce7f3; box-shadow: 0 4px 12px rgba(219,39,119,0.06); }
+.word-card.learned { background: #f0fdf4; border-color: #bbf7d0; }
+.word-sk { font-size: 16px; font-weight: 700; color: #1f2937; }
+.word-ua { font-size: 14px; color: #6b7280; margin-top: 2px; }
+.word-context { font-size: 12px; color: #9ca3af; font-style: italic; margin-top: 4px; }
+.btn-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px; border: none;
+    cursor: pointer; display: flex;
+    align-items: center; justify-content: center;
+    font-size: 16px; transition: 0.15s;
+    background: #f9fafb;
+}
+.btn-icon:hover { background: #f3f4f6; }
+.filter-tab {
+    background: #f9fafb; border: 1.5px solid #f3f4f6;
+    border-radius: 20px; padding: 6px 16px;
+    font-size: 13px; font-weight: 600; color: #6b7280;
+    cursor: pointer; transition: 0.15s;
+}
+.filter-tab.active, .filter-tab:hover {
+    background: #db2777; color: white; border-color: #db2777;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 750px;">
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; flex-wrap: wrap; gap: 16px;">
+        <div>
+            <h1 style="font-size: 32px; font-weight: 800; color: #1f2937; margin-bottom: 4px;">Мій словник</h1>
+            <p style="color: #6b7280; font-size: 14px;">{{ total }} слів · {{ learned }} вивчено</p>
+        </div>
+        <a href="{% url 'grammar_list' %}" style="color: #db2777; font-size: 14px; text-decoration: none; font-weight: 600;">
+            ← До навчання
+        </a>
+    </div>
+
+    {% if total > 0 %}
+    <!-- Прогрес вивчення -->
+    <div style="background: white; border-radius: 16px; padding: 20px; margin-bottom: 24px; border: 1px solid #f3f4f6;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <span style="font-size: 13px; font-weight: 600; color: #374151;">Прогрес вивчення</span>
+            <span style="font-size: 13px; font-weight: 700; color: #db2777;">{{ learned }}/{{ total }}</span>
+        </div>
+        <div style="height: 8px; background: #f3f4f6; border-radius: 10px; overflow: hidden;">
+            <div style="width: {% if total > 0 %}{% widthratio learned total 100 %}{% else %}0{% endif %}%; height: 100%; background: #db2777; border-radius: 10px; transition: 0.5s;"></div>
+        </div>
+    </div>
+
+    <!-- Фільтри -->
+    <div style="display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap;">
+        <span class="filter-tab active" onclick="filterWords('all', this)">Всі ({{ total }})</span>
+        <span class="filter-tab" onclick="filterWords('new', this)">Нові ({{ total|add:"-"|add:learned }})</span>
+        <span class="filter-tab" onclick="filterWords('learned', this)">Вивчені ({{ learned }})</span>
+    </div>
+
+    <!-- Пошук -->
+    <input type="text" id="wordSearch" placeholder="Пошук слова..."
+           oninput="searchWords()"
+           style="width: 100%; padding: 12px 16px; border: 1.5px solid #f3f4f6; border-radius: 12px; font-size: 14px; margin-bottom: 20px; outline: none; box-sizing: border-box;">
+
+    <!-- Список слів -->
+    <div id="wordsList">
+        {% for word in words %}
+        <div class="word-card {% if '' %}learned{% endif %}" data-id="{{ word.id }}" data-learned="{{ ''|yesno:'1,0' }}">
+            <div style="flex: 1;">
+                <div class="word-sk">{{ word.source_word }}</div>
+                <div class="word-ua">{{ word.translated_word }}</div>
+                {% if word.context %}
+                <div class="word-context">{{ word.context|truncatechars:80 }}</div>
+                {% endif %}
+            </div>
+            <div style="display: flex; gap: 6px; flex-shrink: 0;">
+                <button class="btn-icon" onclick="toggleLearned({{ word.id }}, this)"
+                        title="{% if '' %}Позначити як невивчене{% else %}Позначити як вивчене{% endif %}">
+                    {% if '' %}Вивчено{% else %}Не вивчено{% endif %}
+                </button>
+                <button class="btn-icon" onclick="deleteWord({{ word.id }}, this)"
+                        title="Видалити" style="color: #ef4444;">
+                    Видалити
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% else %}
+    <div style="text-align: center; padding: 60px 20px; background: white; border-radius: 20px; border: 2px dashed #fce7f3;">
+        <div style="font-size: 48px; margin-bottom: 16px;">Словник</div>
+        <h3 style="color: #374151; margin-bottom: 8px;">Словник порожній</h3>
+        <p style="color: #9ca3af; font-size: 14px; margin-bottom: 24px;">
+            Виділяй слова у текстах та уроках — вони автоматично зʼявляться тут
+        </p>
+        <a href="{% url 'texts' %}" style="background: #db2777; color: white; padding: 12px 28px; border-radius: 12px; text-decoration: none; font-weight: 700;">
+            Читати тексти
+        </a>
+    </div>
+    {% endif %}
+
+</div>
+
+<script>
+function filterWords(filter, btn) {
+    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.word-card').forEach(card => {
+        const learned = card.dataset.learned === '1';
+        if (filter === 'all') card.style.display = '';
+        else if (filter === 'learned') card.style.display = learned ? '' : 'none';
+        else if (filter === 'new') card.style.display = !learned ? '' : 'none';
+    });
+}
+
+function searchWords() {
+    const q = document.getElementById('wordSearch').value.toLowerCase();
+    document.querySelectorAll('.word-card').forEach(card => {
+        const text = card.textContent.toLowerCase();
+        card.style.display = text.includes(q) ? '' : 'none';
+    });
+}
+
+function toggleLearned(id, btn) {
+    fetch(`/api/toggle-learned/${id}/`, {
+        method: 'POST',
+        headers: {'X-CSRFToken': getCookie('csrftoken')}
+    })
+    .then(r => r.json())
+    .then(data => {
+        const card = btn.closest('.word-card');
+        card.dataset.learned = data.learned ? '1' : '0';
+        card.classList.toggle('learned', data.learned);
+        btn.textContent = data.learned ? 'Вивчено' : 'Не вивчено';
+        btn.title = data.learned ? 'Позначити як невивчене' : 'Позначити як вивчене';
+    });
+}
+
+function deleteWord(id, btn) {
+    if (!confirm('Видалити це слово зі словника?')) return;
+    fetch(`/api/delete-word/${id}/`, {
+        method: 'POST',
+        headers: {'X-CSRFToken': getCookie('csrftoken')}
+    })
+    .then(r => r.json())
+    .then(() => {
+        btn.closest('.word-card').remove();
+    });
+}
+
+function getCookie(name) {
+    let v = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
+    return v ? v[2] : null;
+}
+</script>
+{% endblock %}

@@ -1,0 +1,97 @@
+.layout {
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: 1.25rem 1rem 3rem;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 1rem;
+  margin-bottom: 1.25rem;
+  border-bottom: 1px solid #ffd0e4;
+}
+
+.brand {
+  font-weight: 700;
+}
+
+.nav nav {
+  display: flex;
+  gap: 1rem;
+}
+
+.nav-user {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.muted {
+  color: #5c667a;
+}
+
+.warn {
+  color: #b42318;
+}
+
+a {
+  color: #e8437f;
+}
+
+.linkish {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #e8437f;
+  text-decoration: underline;
+  font: inherit;
+  padding: 0;
+}
+
+.lesson-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.lesson-list li {
+  padding: 0.4rem 0;
+  border-bottom: 1px solid #eef1f6;
+}
+
+.lesson .theory {
+  line-height: 1.55;
+  padding: 0.75rem;
+  border-radius: 8px;
+  background: #f7f9fc;
+  margin-bottom: 1rem;
+}
+
+.tag {
+  display: inline-block;
+  margin-left: 0.5rem;
+  font-size: 0.75rem;
+  padding: 0.05rem 0.35rem;
+  border-radius: 4px;
+  background: #e8eef9;
+}
+
+.stack label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 0.85rem;
+}
+
+.stack input {
+  padding: 0.45rem 0.5rem;
+}
+
+.stack button {
+  padding: 0.55rem 1rem;
+}

@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container" style="max-width: 600px; margin: 50px auto; text-align: center;">
+    <div class="card" style="padding: 40px; border-radius: 24px; border: 1px solid #fce7f3; background: white; box-shadow: 0 10px 25px rgba(219, 39, 119, 0.05);">
+        
+      <h2 style="font-weight: 800; color: #1f2937; margin-bottom: 5px;">Результат тесту</h2>
+        
+        <p style="color: #9ca3af; font-size: 14px; margin-bottom: 30px; font-weight: 600;">
+            Завершено: {{ attempt.taken_at|date:"d.m.Y H:i" }}
+        </p>
+
+        <div style="margin-bottom: 40px; display: flex; justify-content: center; gap: 15px;">
+            <div style="background: #fff1f2; padding: 20px; border-radius: 18px; flex: 1;">
+                <div style="font-size: 26px; font-weight: 800; color: #db2777;">{{ attempt.score }} / {{ attempt.total }}</div>
+                <div style="font-size: 11px; color: #f43f5e; font-weight: 700; text-transform: uppercase;">Правильно</div>
+            </div>
+            
+            <div style="background: #fdf2f8; padding: 20px; border-radius: 18px; flex: 1;">
+                <div style="font-size: 26px; font-weight: 800; color: #db2777;">+{{ attempt.xp_earned }}</div>
+                <div style="font-size: 11px; color: #be185d; font-weight: 700; text-transform: uppercase;">Досвід XP</div>
+            </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+            {% if cert_program_slug %}
+              <a href="{% url 'certificate_exam_path' cert_program_slug %}" style="background: #db2777; color: white; padding: 16px; border-radius: 14px; text-decoration: none; font-weight: 700; box-shadow: 0 4px 12px rgba(219, 39, 119, 0.2);">
+                  Повернутися до програми сертифікації
+              </a>
+            {% else %}
+              <a href="{% url 'dashboard' %}" style="background: #db2777; color: white; padding: 16px; border-radius: 14px; text-decoration: none; font-weight: 700; box-shadow: 0 4px 12px rgba(219, 39, 119, 0.2);">
+                  Повернутися до навчання
+              </a>
+            {% endif %}
+            <a href="{% url 'quiz' %}" style="color: #db2777; text-decoration: none; font-weight: 700; font-size: 14px; padding: 10px;">
+                Спробувати ще раз
+            </a>
+        </div>
+    </div>
+
+    {% if review %}
+    <div class="card" style="margin-top: 18px; padding: 22px; border-radius: 20px; border: 1px solid #f3f4f6; background: white; box-shadow: 0 10px 25px rgba(17,24,39,0.05); text-align:left;">
+        <div style="font-weight: 900; color: #111827; font-size: 16px; margin-bottom: 10px;">Твої відповіді</div>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+            {% for r in review %}
+            <div style="border:1px solid #f3f4f6;border-radius:14px;padding:12px 14px;">
+                <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start;">
+                    <div style="font-weight:800;color:#111827;line-height:1.4;">{{ forloop.counter }}. {{ r.question }}</div>
+                    <span style="font-size:12px;font-weight:900;padding:4px 10px;border-radius:999px; border:1px solid {% if r.is_correct %}#bbf7d0{% else %}#fecaca{% endif %}; background:{% if r.is_correct %}#f0fdf4{% else %}#fff1f2{% endif %}; color:{% if r.is_correct %}#166534{% else %}#be123c{% endif %};">
+                        {% if r.is_correct %}OK{% else %}Помилка{% endif %}
+                    </span>
+                </div>
+                <div style="margin-top:8px;font-size:13px;color:#6b7280;display:flex;flex-direction:column;gap:6px;">
+                    <div><b>Твоя відповідь:</b> <span style="color:#111827;font-weight:800;">{{ r.your_text }}</span></div>
+                    <div><b>Правильна:</b> <span style="color:#111827;font-weight:800;">{{ r.correct_text }}</span></div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

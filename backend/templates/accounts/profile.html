@@ -1,0 +1,443 @@
+{% extends 'base.html' %}
+{% block title %}Профіль — Slovak.sk{% endblock %}
+
+{% block content %}
+<style>
+  body { background: linear-gradient(135deg, #fdf6fb 0%, #fef0f7 50%, #fce7f3 100%) !important; }
+  
+  .profile-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 40px 20px;
+  }
+
+  .profile-header {
+    text-align: center;
+    margin-bottom: 60px;
+  }
+
+  .profile-title {
+    font-size: 52px;
+    font-weight: 800;
+    color: #3f1f35;
+    margin: 0 0 12px;
+    letter-spacing: -1px;
+  }
+
+  .profile-subtitle {
+    font-size: 16px;
+    color: #7c3a57;
+    margin: 0;
+  }
+
+  .profile-card {
+    background: linear-gradient(135deg, #ffffff 0%, rgba(253, 242, 249, 0.3) 100%);
+    border: 2px solid #f8dce9;
+    border-radius: 28px;
+    padding: 60px 50px;
+    box-shadow: 0 12px 40px rgba(236, 72, 153, 0.1);
+    margin-bottom: 40px;
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 60px;
+    align-items: center;
+  }
+
+  .profile-avatar-box {
+    text-align: center;
+  }
+
+  .profile-avatar {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 32px;
+  }
+
+  .profile-avatar img,
+  .profile-avatar-placeholder {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    border: 6px solid white;
+    box-shadow: 0 16px 48px rgba(236, 72, 153, 0.25);
+    display: block;
+    object-fit: cover;
+  }
+
+  .profile-avatar-placeholder {
+    background: linear-gradient(135deg, #ec4899, #db2777);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 80px;
+    font-weight: 800;
+    color: white;
+  }
+
+  .avatar-edit-btn {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #ec4899, #db2777);
+    border-radius: 50%;
+    border: 5px solid white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 8px 24px rgba(236, 72, 153, 0.3);
+  }
+
+  .avatar-edit-btn:hover {
+    transform: scale(1.15);
+    box-shadow: 0 12px 32px rgba(236, 72, 153, 0.4);
+  }
+
+  .avatar-edit-btn svg {
+    width: 28px;
+    height: 28px;
+    stroke: white;
+  }
+
+  .profile-info h2 {
+    font-size: 40px;
+    font-weight: 800;
+    color: #3f1f35;
+    margin: 0 0 8px;
+  }
+
+  .profile-info p {
+    font-size: 16px;
+    color: #7c3a57;
+    margin: 0 0 32px;
+    font-weight: 500;
+  }
+
+  .profile-badges {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+  }
+
+  .badge-item {
+    background: linear-gradient(135deg, #fbcfe8, #f8a5d4);
+    color: #be185d;
+    padding: 10px 24px;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 700;
+    border: 2px solid #f472b6;
+    box-shadow: 0 4px 12px rgba(236, 72, 153, 0.15);
+    letter-spacing: 0.3px;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 40px;
+  }
+
+  .stat-box {
+    background: linear-gradient(135deg, #fbcfe8 0%, rgba(252, 207, 232, 0.5) 100%);
+    padding: 28px 20px;
+    border-radius: 18px;
+    border: 2px solid #f8a5d4;
+    text-align: center;
+  }
+
+  .stat-number {
+    font-size: 40px;
+    font-weight: 800;
+    color: #db2777;
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: #be185d;
+    margin-top: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .referral-section {
+    background: linear-gradient(135deg, #ffffff 0%, rgba(253, 242, 249, 0.3) 100%);
+    border: 2px solid #f8dce9;
+    border-radius: 28px;
+    padding: 50px 40px;
+    box-shadow: 0 12px 40px rgba(236, 72, 153, 0.1);
+    margin-bottom: 40px;
+  }
+
+  .referral-section h3 {
+    font-size: 28px;
+    font-weight: 800;
+    color: #3f1f35;
+    margin: 0 0 16px;
+  }
+
+  .referral-text {
+    font-size: 15px;
+    color: #7c3a57;
+    line-height: 1.6;
+    margin: 0 0 28px;
+  }
+
+  .referral-code-box {
+    background: linear-gradient(135deg, #fbcfe8 0%, #f8a5d4 100%);
+    border: 2px solid #f472b6;
+    border-radius: 16px;
+    padding: 20px;
+    font-family: 'Monaco', 'Courier New', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    color: #be185d;
+    text-align: center;
+    margin-bottom: 24px;
+    letter-spacing: 3px;
+    box-shadow: 0 6px 20px rgba(236, 72, 153, 0.15);
+  }
+
+  .copy-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #ec4899, #db2777);
+    color: white;
+    border: none;
+    padding: 16px 32px;
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 8px 24px rgba(236, 72, 153, 0.3);
+  }
+
+  .copy-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(236, 72, 153, 0.4);
+  }
+
+  .action-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 40px;
+  }
+
+  .action-btn {
+    padding: 20px;
+    border-radius: 16px;
+    text-align: center;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 16px;
+    transition: all 0.3s;
+    border: none;
+    cursor: pointer;
+    display: inline-block;
+  }
+
+  .btn-stats {
+    background: linear-gradient(135deg, #ec4899, #db2777);
+    color: white;
+    box-shadow: 0 8px 24px rgba(236, 72, 153, 0.3);
+  }
+
+  .btn-stats:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(236, 72, 153, 0.4);
+  }
+
+  .btn-logout {
+    background: linear-gradient(135deg, #fce7f3, #fbcfe8);
+    color: #db2777;
+    border: 2px solid #f8a5d4;
+    box-shadow: 0 4px 12px rgba(236, 72, 153, 0.1);
+  }
+
+  .btn-logout:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(236, 72, 153, 0.15);
+    background: linear-gradient(135deg, #fbcfe8, #f8a5d4);
+  }
+
+  @media (max-width: 900px) {
+    .profile-card {
+      grid-template-columns: 1fr;
+      gap: 40px;
+      padding: 40px 30px;
+    }
+
+    .profile-title {
+      font-size: 40px;
+    }
+
+    .stats-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .action-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .profile-info h2 {
+      font-size: 32px;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .profile-container {
+      padding: 24px 16px;
+    }
+
+    .profile-card {
+      padding: 30px 20px;
+      margin-bottom: 30px;
+    }
+
+    .profile-avatar img,
+    .profile-avatar-placeholder {
+      width: 140px;
+      height: 140px;
+      border-width: 5px;
+    }
+
+    .avatar-edit-btn {
+      width: 48px;
+      height: 48px;
+    }
+
+    .profile-title {
+      font-size: 32px;
+    }
+
+    .profile-info h2 {
+      font-size: 24px;
+    }
+
+    .referral-code-box {
+      font-size: 16px;
+      padding: 16px;
+    }
+
+    .stats-grid {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .stat-box {
+      padding: 20px 16px;
+    }
+
+    .stat-number {
+      font-size: 32px;
+    }
+  }
+</style>
+
+<div class="profile-container">
+  <!-- Header -->
+  <div class="profile-header">
+    <h1 class="profile-title">Мій Профіль</h1>
+    <p class="profile-subtitle">Твій особистий кабінет для навчання</p>
+  </div>
+
+  <!-- Main Profile Card -->
+  <div class="profile-card">
+    <!-- Left: Avatar -->
+    <div class="profile-avatar-box">
+      <div class="profile-avatar">
+        {% if profile.avatar %}
+          <img src="{{ profile.avatar.url }}" alt="Аватар">
+        {% else %}
+          <div class="profile-avatar-placeholder">{{ user.first_name.0|upper|default:user.username.0|upper }}</div>
+        {% endif %}
+        
+        <div class="avatar-edit-btn">
+          <form method="post" enctype="multipart/form-data" id="avatarForm" style="display: contents;">
+            {% csrf_token %}
+            <label for="avatarInput" style="
+              cursor: pointer;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              width: 100%;
+              height: 100%;
+            ">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+            </label>
+            <input type="file" name="avatar" id="avatarInput" accept="image/*" style="display:none;" onchange="document.getElementById('avatarForm').submit()">
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Info & Stats -->
+    <div>
+      <div class="profile-info">
+        <h2>{{ user.first_name|default:user.username }}</h2>
+        <p>@{{ user.username }}</p>
+      </div>
+
+      <div class="profile-badges">
+        <div class="badge-item">{{ profile.level_name|default:"Початківець" }}</div>
+        <div class="badge-item">{% if profile.is_premium %}✨ Premium{% else %}Free (A1){% endif %}</div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="stat-number">{{ profile.total_xp|default:0 }}</div>
+          <div class="stat-label">XP</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-number">{{ completed|default:0 }}</div>
+          <div class="stat-label">Уроків</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-number">{{ quiz_count|default:0 }}</div>
+          <div class="stat-label">Тестів</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Referral Section -->
+  <div class="referral-section">
+    <h3>Запросити друга 🎁</h3>
+    <p class="referral-text">
+      Поділись своїм кодом. Друзі отримають 20% знижку, а ти отримаєш бонус! 
+    </p>
+    
+    <div class="referral-code-box">{{ ref_code }}</div>
+    
+    <button type="button" class="copy-btn" onclick="
+      const code = '{{ ref_code }}';
+      navigator.clipboard.writeText(code);
+      this.innerText = '✓ Скопійовано!';
+      setTimeout(() => this.innerText = 'Скопіювати код', 2000);
+    ">
+      Скопіювати код
+    </button>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="action-grid">
+    <a href="{% url 'stats' %}" class="action-btn btn-stats">
+      📊 Статистика
+    </a>
+    <a href="{% url 'logout' %}" class="action-btn btn-logout">
+      👋 Вийти
+    </a>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% block title %}Тест визначення рівня — Slovak.sk{% endblock %}
+
+{% block extra_css %}
+<style>
+.placement-card {
+    background: white;
+    border-radius: 20px;
+    padding: 28px;
+    margin-bottom: 20px;
+    border: 1px solid #f3f4f6;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    border-left: 5px solid #db2777;
+}
+.quiz-option-label { display: block; cursor: pointer; margin-bottom: 10px; }
+.quiz-radio { display: none; }
+.option-content {
+    display: flex; align-items: center;
+    padding: 14px 20px;
+    background: #fff; border: 2px solid #f3f4f6;
+    border-radius: 12px; transition: all 0.2s ease;
+}
+.option-letter {
+    display: flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; background: #f3f4f6;
+    color: #6b7280; border-radius: 6px;
+    font-weight: 700; font-size: 14px; margin-right: 15px;
+}
+.option-text { font-size: 15px; color: #374151; font-weight: 500; }
+.quiz-option-label:hover .option-content { border-color: #fce7f3; background: #fff1f2; }
+.quiz-radio:checked + .option-content { border-color: #db2777; background: #fdf2f8; }
+.quiz-radio:checked + .option-content .option-letter { background: #db2777; color: white; }
+.quiz-radio:checked + .option-content .option-text { color: #db2777; font-weight: 600; }
+.level-divider {
+    text-align: center; margin: 30px 0 20px;
+    font-size: 13px; font-weight: 700; color: #9ca3af;
+    text-transform: uppercase; letter-spacing: 1px;
+    display: flex; align-items: center; gap: 12px;
+}
+.level-divider::before, .level-divider::after {
+    content: ''; flex: 1; height: 1px; background: #f3f4f6;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="max-width: 750px; margin: 0 auto; padding: 30px 20px;">
+
+    {% if not user.is_authenticated %}
+    <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:16px;padding:14px 16px;margin-bottom:18px;">
+        <div style="font-weight:800;color:#9a3412;margin-bottom:6px;">Тест можна пройти як гість</div>
+        <div style="color:#7c2d12;font-size:13px;line-height:1.7;">
+            Після завершення ми попросимо зареєструватись/увійти, щоб показати результат і зберегти його.
+        </div>
+    </div>
+    {% endif %}
+
+    <div style="text-align: center; margin-bottom: 40px;">
+        <div style="font-size: 48px; margin-bottom: 12px;">Тест</div>
+        <h1 style="font-size: 32px; font-weight: 800; color: #1f2937; margin-bottom: 8px;">Визначення рівня</h1>
+        <p style="color: #6b7280; font-size: 16px;">Пройди тест з {{ total_questions }} питань — ми визначимо твій рівень і порадимо з чого почати</p>
+    </div>
+
+    <div style="background: #fff1f2; border-radius: 14px; padding: 16px 20px; margin-bottom: 30px; border-left: 4px solid #db2777;">
+        <p style="margin: 0; color: #9d174d; font-size: 14px;">
+            <strong>Порада:</strong> Якщо не знаєш відповідь — просто вгадуй. Тест без штрафів, він лише допомагає знайти твій старт.
+        </p>
+    </div>
+
+    <form method="post" id="placementForm">
+        {% csrf_token %}
+
+        {% for section in sections %}
+        <div class="level-divider">
+            <span style="background: 
+                {% if section.level == 'A1' %}#d1fae5; color: #059669
+                {% elif section.level == 'A2' %}#e0f2fe; color: #0284c7
+                {% else %}#fef3c7; color: #d97706{% endif %};
+                padding: 4px 12px; border-radius: 8px;">
+                Рівень {{ section.level }}
+            </span>
+        </div>
+
+        {% for it in section.items %}
+        {% with q=it.obj %}
+        <div class="placement-card" style="border-left-color:
+            {% if q.level == 'A1' %}#059669{% elif q.level == 'A2' %}#0284c7{% else %}#d97706{% endif %};">
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                <span style="font-size: 12px; font-weight: 700; color: #9ca3af; text-transform: uppercase;">
+                    Питання {{ it.num }}
+                </span>
+                <span style="background: #fdf2f8; color: #db2777; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700;">
+                    {{ q.level }}
+                </span>
+            </div>
+
+            <h5 style="font-size: 17px; font-weight: 700; color: #1f2937; margin-bottom: 18px; line-height: 1.5;">
+                {{ q.question }}
+            </h5>
+
+            <div>
+                {% for option in q.get_options %}
+                <label class="quiz-option-label">
+                    <input type="radio" name="q_{{ q.id }}" value="{{ forloop.counter0 }}" required class="quiz-radio">
+                    <div class="option-content">
+                        <span class="option-letter">{% if forloop.counter == 1 %}A{% elif forloop.counter == 2 %}B{% else %}C{% endif %}</span>
+                        <span class="option-text">{{ option }}</span>
+                    </div>
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+        {% endwith %}
+        {% endfor %}
+        {% endfor %}
+
+        <div style="text-align: center; padding: 20px 0 40px;">
+            <button type="submit" style="
+                background: #db2777; color: white;
+                padding: 18px 50px; border: none;
+                border-radius: 14px; font-size: 18px;
+                font-weight: 700; cursor: pointer;
+                box-shadow: 0 4px 15px rgba(219,39,119,0.3);
+                transition: all 0.3s;
+            " onmouseover="this.style.background='#be185d'"
+               onmouseout="this.style.background='#db2777'">
+                Визначити мій рівень →
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

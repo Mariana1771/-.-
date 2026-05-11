@@ -1,0 +1,317 @@
+{% extends 'base.html' %}
+{% block title %}Головна — Slovak.sk{% endblock %}
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  .dash-wrap { max-width: 1200px; margin: 0 auto; }
+  .dash-hero { padding: 22px; border-radius: var(--radius-lg); }
+  .dash-hero-top { display:flex; justify-content:space-between; align-items:flex-start; gap: 16px; flex-wrap:wrap; }
+  .dash-hero-meta { display:flex; align-items:center; gap: 12px; flex-wrap:wrap; margin-top: 10px; }
+  .dash-hero-bar { width: 180px; height: 8px; background: rgba(236, 72, 153, 0.1); border-radius: 999px; overflow: hidden; border: 2px solid #f8dce9; }
+  .dash-hero-bar > i { display: block; height: 100%; background: linear-gradient(90deg, #fbcfe8, #ec4899); border-radius: 999px; }
+  .dash-actions { display:flex; gap:10px; flex-wrap:wrap; }
+
+  /* --- subtle interactive motion --- */
+  @keyframes riseIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .reveal { opacity: 0; animation: riseIn .55s cubic-bezier(.2,.9,.2,1) both; }
+  .reveal.d2 { animation-delay: .08s; }
+  .reveal.d3 { animation-delay: .16s; }
+  .reveal.d4 { animation-delay: .24s; }
+  .btn { transition: transform .18s ease, box-shadow .18s ease, filter .18s ease; }
+  .btn:hover { transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); filter: brightness(.98); }
+  .next-card, .surface { transition: transform .22s ease, box-shadow .22s ease, background .22s ease; }
+  .next-card:hover { transform: translateY(-4px); }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; animation: none; }
+    .btn, .next-card, .surface { transition: none; }
+  }
+
+  .primary-card { padding: 18px; border-radius: var(--radius-lg); }
+  .primary-top { display:flex; align-items:flex-start; justify-content:space-between; gap: 14px; flex-wrap:wrap; }
+  .primary-title { font-weight: 950; letter-spacing: -.6px; color: #3f1f35; margin: 0 0 6px; font-size: 20px; }
+  .primary-sub { margin: 0; color: var(--text-2); font-weight: 700; font-size: 13px; line-height: 1.6; }
+  .primary-cta { display:flex; gap: 10px; flex-wrap:wrap; align-items:center; }
+  .quick-actions { display:flex; gap: 10px; flex-wrap:wrap; margin: 12px 0 6px; }
+
+  .fold { margin-top: 12px; }
+  /* Make dashboard feel "open" (less boxed). */
+  .fold details { background: transparent; border: none; border-radius: 0; box-shadow: none; backdrop-filter: none; padding: 0; }
+  .fold details + details { margin-top: 0; }
+  .fold summary { cursor:pointer; list-style:none; font-weight: 950; color: #3f1f35; display:flex; align-items:center; justify-content:flex-start; gap: 10px; }
+  .fold summary::-webkit-details-marker { display:none; }
+  .fold small { color: var(--text-2); font-weight: 800; }
+  .fold-body { margin-top: 12px; }
+  /* Remove divider line for cleaner look */
+  .dash-divider { display:none; }
+
+  /* Make dashboard less “boxed”: softer surfaces, no hard borders */
+  .dash-wrap .surface {
+    background: linear-gradient(135deg, #ffffff, rgba(253, 242, 249, 0.3));
+    border: 2px solid #f8dce9;
+    box-shadow: 0 12px 40px rgba(236, 72, 153, 0.1);
+  }
+
+  /* Новий стиль для іконок уроків */
+  .lesson-visual {
+    width: 44px;
+    height: 44px;
+    background: linear-gradient(135deg, #fce7f3, #fbcfe8);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    transition: all 0.3s ease;
+    border: 2px solid #f8a5d4;
+  }
+
+  .lesson-letter {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    color: #db2777;
+    text-transform: uppercase;
+  }
+
+  .lesson-card:hover .lesson-visual {
+    background: linear-gradient(135deg, #ec4899, #db2777);
+    transform: scale(1.05) rotate(-3deg);
+    border-color: transparent;
+  }
+
+  .lesson-card:hover .lesson-letter {
+    color: white;
+  }
+
+  /* Додаємо легку тінь карткам для об'єму */
+  .lesson-card {
+    transition: all 0.3s ease !important;
+    border: 1px solid #f3f4f6 !important;
+    text-decoration: none !important;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .lesson-card:hover {
+    box-shadow: 0 12px 24px rgba(219, 39, 119, 0.08) !important;
+    border-color: #fbcfe8 !important;
+    transform: translateY(-4px);
+  }
+
+  .lesson-title {
+    font-weight: 700 !important;
+    color: #1a1a2e !important;
+    margin-bottom: 4px !important;
+    font-size: 15px !important;
+  }
+
+  .lesson-meta {
+    font-size: 12px !important;
+    color: #9ca3af !important;
+    font-weight: 500 !important;
+  }
+
+  .next-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+  .next-card {
+    background: rgba(255,255,255,.55);
+    border: none;
+    border-radius: var(--radius-lg);
+    padding: 18px;
+    box-shadow: 0 14px 44px rgba(17,24,39,.06);
+    text-decoration:none;
+    color: inherit;
+    display:block;
+    transition: transform .2s, box-shadow .2s, border-color .2s;
+  }
+  .next-card:hover { box-shadow: 0 22px 56px rgba(17,24,39,.10); }
+  .next-title { font-weight: 900; color:#111827; margin: 1px 0 4px; }
+  .next-sub { color:#6b7280; font-size: 13px; line-height: 1.55; margin: 0; }
+
+  /* legacy daily styles kept but unused */
+  .mini {
+    background: rgba(255,255,255,.75);
+    border: 1px solid rgba(219,39,119,.14);
+    border-radius: 16px;
+    padding: 10px 12px;
+    min-width: 220px;
+  }
+  .mini-top { display:flex; justify-content:space-between; gap:10px; align-items:baseline; margin-bottom:8px; }
+  .mini-top b { color:#2d1f26; font-size:12px; letter-spacing:.2px; text-transform:uppercase; }
+  .mini-top span { color:#db2777; font-weight:900; font-size:12px; }
+  .mini-bar { height:8px; background:#ffe0ea; border-radius:999px; overflow:hidden; border:1px solid #f2dde4; }
+  .mini-bar > i { display:block; height:100%; width:0%; background:linear-gradient(90deg,#f8a5d4,#ec4899); border-radius:999px; }
+  .daily .btn { padding: 11px 16px; border-radius: 14px; font-weight: 900; }
+
+  .goal-details { background: rgba(255,255,255,.72); border: 1px solid rgba(219,39,119,.14); border-radius: 18px; padding: 10px 12px; }
+  .goal-details summary { cursor:pointer; list-style:none; font-weight:900; color:#2d1f26; font-size:13px; display:flex; align-items:center; gap:8px; }
+  .goal-details summary::-webkit-details-marker { display:none; }
+  .goal-form { display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end; margin-top: 10px; }
+  .goal-field { display:flex; flex-direction:column; gap:6px; }
+  .goal-field label { font-size:11px; font-weight:900; letter-spacing:.3px; color:#6b7280; text-transform:uppercase; }
+  .goal-field input {
+    width: 92px;
+    padding: 10px 10px;
+    border-radius: 12px;
+    border: 1px solid rgba(219,39,119,.18);
+    background: #fff;
+    font-weight: 800;
+    color:#111827;
+    outline: none;
+  }
+  .goal-field input:focus { border-color:#f472b6; box-shadow: 0 0 0 4px rgba(236,72,153,.2); }
+  .goal-save { appearance:none; border:none; cursor:pointer; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="dash-wrap">
+
+  {% if not user.is_authenticated %}
+  <div class="alert alert-warn" style="background:#fff1f2; color:#9d174d; padding:12px; border-radius:12px; margin-bottom:24px; font-size:14px; border-left:4px solid #db2777;">
+    Ти не авторизований — прогрес не зберігається.
+    <a href="{% url 'register' %}" class="js-open-auth-modal" data-auth="register" data-next="{% url 'dashboard' %}" style="color:var(--pink-600);font-weight:700;text-decoration:none;margin-left:8px;">Зареєструватись →</a>
+  </div>
+  {% endif %}
+
+  <div class="surface dash-hero reveal d2" style="margin-bottom: 18px;">
+    <div class="dash-hero-top">
+      <div>
+        <div class="kicker">Dashboard</div>
+        <div style="margin-top: 10px;" class="h1">Привіт, {{ user.first_name|default:user.username|default:"Гість" }}</div>
+        {% if profile %}
+        <div class="dash-hero-meta">
+          <div class="muted" style="font-weight:800;">{{ profile.level_name }} • {{ profile.total_xp }} XP</div>
+          <div class="dash-hero-bar">
+            <i style="width:{{ profile.level_progress_percent }}%;"></i>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+      <div class="dash-actions">
+        <a href="{% url 'grammar_list' %}" class="btn btn-outline">Граматика</a>
+        <a href="{% url 'quiz' %}" class="btn btn-outline">Тести</a>
+      </div>
+    </div>
+  </div>
+
+  {% if user.is_authenticated and profile %}
+  <div class="surface primary-card reveal d3" style="margin: 18px 0 12px;">
+    <div class="primary-top">
+      <div>
+        <div class="primary-title">Продовжити навчання</div>
+        {% if next_lesson %}
+          <p class="primary-sub">Наступний урок: <b style="color:#111827;">{{ next_lesson.title }}</b></p>
+        {% else %}
+          <p class="primary-sub">У тебе вже все пройдено. Можеш повторити або пройти тест рівня.</p>
+        {% endif %}
+      </div>
+      <div class="primary-cta">
+        {% if next_lesson %}
+          <a class="btn btn-primary" href="{% url 'lesson_detail' next_lesson.id %}">Продовжити →</a>
+        {% endif %}
+        <a class="btn btn-outline" href="{% url 'grammar_list' %}">Всі теми</a>
+      </div>
+    </div>
+    <div class="quick-actions reveal d4">
+      <a class="btn btn-outline" href="{% url 'placement_test' %}">Тест рівня</a>
+      <a class="btn btn-outline" href="{% url 'dictionary' %}">Словник</a>
+      <a class="btn btn-outline" href="{% url 'certificates_page' %}">Сертифікація</a>
+    </div>
+  </div>
+
+  <div class="fold">
+    <div class="dash-divider"></div>
+    <details>
+      <summary>
+        <span>Моя ціль <small>({{ profile.daily_goal_lessons }} урок(и) • {{ profile.daily_goal_minutes }} хв • {{ profile.daily_goal_words }} слів)</small></span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </summary>
+      <div class="fold-body">
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+          <div class="mini" style="min-width: 240px;">
+            <div class="mini-top">
+              <b>Прогрес</b>
+              <span>{{ completed_ids|length }}/{{ total_lessons }}</span>
+            </div>
+            <div class="mini-bar">
+              {% if total_lessons %}
+                <i style="width:{% widthratio completed_ids|length total_lessons 100 %}%;"></i>
+              {% else %}
+                <i style="width:0%;"></i>
+              {% endif %}
+            </div>
+          </div>
+          <details class="goal-details">
+            <summary>
+              Налаштувати ціль
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </summary>
+            <form class="goal-form" method="post" action="{% url 'dashboard' %}">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="set_goal">
+              <div class="goal-field">
+                <label>Уроки</label>
+                <input type="number" min="1" max="9" name="goal_lessons" value="{{ profile.daily_goal_lessons }}">
+              </div>
+              <div class="goal-field">
+                <label>Хв</label>
+                <input type="number" min="5" max="120" name="goal_minutes" value="{{ profile.daily_goal_minutes }}">
+              </div>
+              <div class="goal-field">
+                <label>Слів</label>
+                <input type="number" min="3" max="50" name="goal_words" value="{{ profile.daily_goal_words }}">
+              </div>
+              <button class="btn btn-primary goal-save" type="submit">Зберегти</button>
+            </form>
+          </details>
+        </div>
+      </div>
+    </details>
+  </div>
+  {% endif %}
+
+  <div style="margin: 18px 0 14px;display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;">
+    <div>
+      <div class="h2" style="margin:0 0 4px;">Що робимо далі?</div>
+      <div class="muted" style="font-size:13px;font-weight:700;">Короткий план на сьогодні — обери будь-який крок і рухайся вперед.</div>
+    </div>
+    <a href="{% url 'grammar_list' %}" style="font-size:14px;color:#db2777;text-decoration:none;font-weight:900;">Всі теми →</a>
+  </div>
+
+  <div class="next-grid" style="margin-bottom: 10px;">
+    <a class="next-card reveal d2" href="{% url 'grammar_list' %}">
+      <div>
+        <div class="next-title">Продовжити навчання</div>
+        <p class="next-sub">Уроки A1–B2 з теорією та вправами. Вибери рівень і тему.</p>
+      </div>
+    </a>
+
+    <a class="next-card reveal d3" href="{% url 'placement_test' %}">
+      <div>
+        <div class="next-title">Тест рівня</div>
+        <p class="next-sub">За 2–3 хвилини визначимо A1/A2/B1/B2 і підкажемо, з чого почати.</p>
+      </div>
+    </a>
+
+    <a class="next-card reveal d4" href="{% url 'dictionary' %}">
+      <div>
+        <div class="next-title">Словник</div>
+        <p class="next-sub">Швидкий пошук перекладу та повторення. Додавай слова в “мої”.</p>
+      </div>
+    </a>
+
+    <a class="next-card reveal d4" href="{% url 'certificates_page' %}">
+      <div>
+        <div class="next-title">Сертифікація</div>
+        <p class="next-sub">Окрема програма з фінальним тестом і сертифікатом після виконання умов.</p>
+      </div>
+    </a>
+  </div>
+
+  </div>
+</div>
+{% endblock %}

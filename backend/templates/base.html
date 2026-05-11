@@ -1,0 +1,653 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Slovak.sk{% endblock %}</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    html { scroll-behavior: smooth; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      /* NEW PINK THEME - Warm & Comfortable */
+      --accent-rgb: 236, 72, 153;
+      --pink-50: #fdf2f9;
+      --pink-100: #fce7f3;
+      --pink-200: #fbcfe8;
+      --pink-300: #f8a5d4;
+      --pink-400: #f472b6;
+      --pink-500: #ec4899;
+      --pink-600: #db2777;
+      --pink-700: #be185d;
+      --pink-800: #9d174d;
+      --text: #3f1f35;
+      --text-2: #7c3a57;
+      --text-3: #c084c0;
+      --bg: #fdf6fb;
+      --bg-accent: #fef0f7;
+      --bg-card: #ffffff;
+      --border: #f8dce9;
+      --shadow: 0 8px 32px rgba(236, 72, 153, 0.12);
+      --shadow-sm: 0 2px 12px rgba(236, 72, 153, 0.08);
+      --shadow-lg: 0 25px 50px rgba(236, 72, 153, 0.15);
+      --radius: 16px;
+      --radius-sm: 12px;
+      --radius-lg: 24px;
+      --ring: 0 0 0 4px rgba(236, 72, 153, 0.2);
+    }
+    body {
+      font-family:'DM Sans',sans-serif;
+      background:
+        linear-gradient(135deg, #fdf6fb 0%, #fef0f7 50%, #fce7f3 100%);
+      color:var(--text);
+      min-height:100vh;
+      font-size:16px;
+      line-height:1.7;
+      display:flex;
+      flex-direction:column;
+    }
+    main { flex: 1 0 auto; }
+    footer {
+      margin-top: 40px;
+      padding: 48px 0 32px;
+      border-top: 2px solid var(--pink-100);
+      background: linear-gradient(180deg, rgba(253, 242, 249, 0.8), rgba(254, 240, 247, 0.8));
+      backdrop-filter: blur(10px);
+    }
+    /* Make footer lighter on homepage to avoid a "blank bar" feel */
+    body.home footer {
+      margin-top: 0;
+      border-top: none;
+      background: transparent;
+      backdrop-filter: none;
+      padding: 14px 0 18px;
+    }
+    body.home .footer-bottom { margin-top: 10px; }
+    .footer-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .footer-brand {
+      font-weight: 950;
+      color: var(--pink-600);
+      letter-spacing: .2px;
+      margin-bottom: 6px;
+      font-size: 16px;
+    }
+    .footer-note { color: var(--text-2); font-size: 13px; line-height: 1.7; max-width: 420px; }
+    .footer-grid {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+    .footer-col-title {
+      font-size: 11px;
+      letter-spacing: .9px;
+      text-transform: uppercase;
+      font-weight: 900;
+      color: var(--text-3);
+      margin-bottom: 10px;
+    }
+    .footer-links { display:flex; flex-direction:column; gap: 8px; }
+    .footer-a {
+      color: var(--text-2);
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 13px;
+      transition: .15s;
+      width: fit-content;
+    }
+    .footer-a:hover { color: var(--pink-600); text-decoration: underline; }
+
+    .social-row { display:flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+    .social-btn {
+      width: 40px; height: 40px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.82);
+      display:flex; align-items:center; justify-content:center;
+      transition: .15s;
+      text-decoration:none;
+    }
+    .social-btn:hover { transform: translateY(-1px); border-color: var(--pink-200); background: var(--pink-50); }
+    .social-btn svg { width: 18px; height: 18px; stroke: var(--text-2); }
+    .social-btn:hover svg { stroke: var(--pink-600); }
+
+    .footer-bottom {
+      max-width: 1400px;
+      margin: 14px auto 0;
+      padding: 0 24px;
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      color: var(--text-3);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    @media (max-width: 720px) {
+      .footer-grid { grid-template-columns: 1fr; }
+    }
+    nav {
+      background: linear-gradient(180deg, rgba(253, 242, 249, 0.95), rgba(254, 240, 247, 0.90));
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--pink-100);
+      padding:0 32px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      height:70px;
+      position:sticky;
+      top:0;
+      z-index:100;
+      box-shadow: 0 2px 12px rgba(236, 72, 153, 0.06);
+    }
+    .nav-logo { font-family:'DM Sans',sans-serif; font-size:20px; font-weight:800; color:var(--pink-500); text-decoration:none; letter-spacing:.2px; }
+    .nav-logo span { color:var(--text-3); font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; margin-left:6px; }
+    .nav-links { display:flex; align-items:center; gap:4px; }
+    .nav-link { padding:8px 14px; border-radius:var(--radius-sm); text-decoration:none; color:var(--text-2); font-size:14px; font-weight:600; transition:all .15s; }
+    .nav-link:hover { background:var(--pink-50); color:var(--pink-500); }
+    .nav-link.btn-nav { background:linear-gradient(180deg,var(--pink-500),var(--pink-600)); color:#fff; padding:8px 18px; box-shadow:0 10px 24px rgba(var(--accent-rgb),.20); }
+    .nav-link.btn-nav:hover { filter:brightness(.98); transform: translateY(-1px); }
+    .container { max-width:1400px; margin:0 auto; padding:40px 24px; }
+    .container-sm { max-width:520px; margin:0 auto; padding:40px 24px; }
+    .card {
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid var(--pink-100);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      box-shadow: 0 8px 24px rgba(236, 72, 153, 0.08);
+    }
+    .surface {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(253, 242, 249, 0.5));
+      border: 1px solid var(--pink-100);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 12px 32px rgba(236, 72, 153, 0.1);
+      backdrop-filter: blur(10px);
+    }
+    .kicker {
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, rgba(252, 231, 243, 0.8), rgba(248, 165, 212, 0.6));
+      border: 1px solid rgba(236, 72, 153, 0.3);
+      color: var(--pink-700);
+      font-weight: 900;
+      font-size: 12px;
+      letter-spacing: .35px;
+      text-transform: uppercase;
+    }
+    .h1 {
+      font-size: clamp(34px, 3.1vw, 56px);
+      font-weight: 800;
+      letter-spacing: -1.2px;
+      line-height: 1.04;
+      color: #2a2628;
+    }
+    .h2 {
+      font-size: clamp(22px, 1.8vw, 30px);
+      font-weight: 800;
+      letter-spacing: -.7px;
+      line-height: 1.14;
+      color: #2a2628;
+    }
+    .muted { color: var(--text-2); }
+    .grid-2 { display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 18px; }
+    .grid-3 { display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 18px; }
+    @media (max-width: 860px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+    .btn { display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:11px 22px; border-radius:var(--radius-sm); font-family:'DM Sans',sans-serif; font-size:14px; font-weight:700; cursor:pointer; border:none; text-decoration:none; transition:transform .15s, box-shadow .15s, background .15s, border-color .15s; white-space:nowrap; }
+    .btn:focus-visible { outline:none; box-shadow: var(--ring); }
+    .btn-primary { background:linear-gradient(180deg,var(--pink-500),var(--pink-600)); color:#fff; box-shadow:0 12px 28px rgba(var(--accent-rgb),.18); }
+    .btn-primary:hover { transform:translateY(-1px); box-shadow:0 16px 34px rgba(var(--accent-rgb),.22); }
+    .btn-outline { background:transparent; color:var(--pink-500); border:2px solid var(--pink-300); }
+    .btn-outline:hover { background:var(--pink-50); border-color: var(--pink-400); }
+    .btn-ghost { background:var(--pink-50); color:var(--text-2); }
+    .btn-ghost:hover { background:var(--pink-100); }
+    .form-group { margin-bottom:18px; }
+    .form-label { display:block; font-size:13px; font-weight:600; color:var(--text-2); margin-bottom:6px; letter-spacing:.3px; text-transform:uppercase; }
+    .form-input { width:100%; padding:14px 16px; border:2px solid var(--pink-100); border-radius:var(--radius-sm); font-family:'DM Sans',sans-serif; font-size:15px; color:var(--text); background:rgba(255, 255, 255, 0.9); transition:border .15s, box-shadow .15s, background .15s; outline:none; }
+    .form-input:focus { border-color:var(--pink-400); background:#fff; box-shadow: var(--ring); }
+    .form-error { font-size:12px; color:var(--pink-500); margin-top:5px; }
+    .badge { display:inline-block; padding:2px 10px; border-radius:50px; font-size:11px; font-weight:700; letter-spacing:.4px; text-transform:uppercase; }
+    .badge-a1 { background:#e8f5e9; color:#2e7d32; }
+    .badge-a2 { background:#e3f2fd; color:#1565c0; }
+    .badge-b1 { background:#f3e5f5; color:#6a1b9a; }
+    .badge-b2 { background:#fff3e0; color:#e65100; }
+    .progress-wrap { background:var(--pink-100); border-radius:50px; height:6px; overflow:hidden; }
+    .progress-bar { height:100%; background:linear-gradient(90deg,var(--pink-300),var(--pink-500)); border-radius:50px; transition:width .5s ease; }
+    .stat-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:16px; }
+    .stat-card { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); padding:20px; text-align:center; }
+    .stat-num { font-size:32px; font-weight:700; color:var(--pink-500); line-height:1; }
+    .stat-label { font-size:12px; color:var(--text-3); margin-top:6px; font-weight:500; }
+    .lesson-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:14px; }
+    .lesson-card { background:linear-gradient(135deg, var(--bg-card), rgba(253, 242, 249, 0.5)); border:2px solid var(--pink-100); border-radius:var(--radius); padding:20px; text-decoration:none; color:inherit; transition:all .2s; display:block; }
+    .lesson-card:hover { border-color:var(--pink-400); transform:translateY(-4px); box-shadow: var(--shadow); }
+    .lesson-card.done { border-color:var(--pink-200); background:var(--pink-50); }
+    .lesson-title { font-weight:600; font-size:15px; margin-bottom:4px; }
+    .lesson-meta { font-size:12px; color:var(--text-3); }
+    .alert { padding:12px 18px; border-radius:var(--radius-sm); font-size:14px; margin-bottom:20px; }
+    .alert-info { background:linear-gradient(135deg, var(--pink-50), rgba(252, 231, 243, 0.8)); border:1px solid var(--pink-200); color:var(--pink-700); }
+    .alert-success { background:#e8f5e9; border:1px solid #c8e6c9; color:#2e7d32; }
+    .alert-warn { background:#fff8e1; border:1px solid #ffe082; color:#f57c00; }
+    .page-header { margin-bottom:32px; }
+    .page-title { font-family:'DM Sans',sans-serif; font-size:28px; font-weight:700; color:var(--text); margin-bottom:6px; letter-spacing:-.15px; }
+    .page-sub { color:var(--text-2); font-size:15px; }
+    .divider { border:none; border-top:1px solid var(--border); margin:24px 0; }
+    .messages-list { list-style:none; }
+    .messages-list li { padding:12px 18px; border-radius:var(--radius-sm); margin-bottom:10px; font-size:14px; }
+    .messages-list .success { background:#e8f5e9; color:#2e7d32; }
+    .messages-list .error { background:#fce4ec; color:#c62828; }
+    .messages-list .info { background:var(--pink-50); color:var(--pink-600); }
+
+    /* --- Readable theory/text "prose" --- */
+    .prose {
+      font-size: 17px;
+      line-height: 1.9;
+      color: #334155;
+    }
+    .prose h2, .prose h3 { color:#2f2a2d; }
+    .prose h2 { font-size: 24px; margin: 18px 0 10px; font-weight: 900; }
+    .prose h3 { font-size: 20px; margin: 16px 0 8px; font-weight: 900; }
+    .prose p { margin: 10px 0; }
+    .prose ul, .prose ol { margin: 10px 0 10px 20px; }
+    .prose li { margin: 6px 0; }
+    .prose b, .prose strong { color:#0f172a; }
+    .prose code { background:#f8fafc; border:1px solid #e2e8f0; padding:2px 6px; border-radius:8px; font-weight:800; }
+    .prose table { width: 100%; border-collapse: collapse; margin: 16px 0; overflow:hidden; border-radius:14px; }
+    .prose table td, .prose table th { border: 1px solid #e5e7eb; padding: 12px; vertical-align: top; }
+    .prose table th { background-color: var(--pink-50); color: var(--pink-600); font-weight: 700; }
+    .prose .theory-block {
+      border:1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px 16px;
+      background: linear-gradient(180deg, #ffffff, #fffafb);
+      box-shadow: 0 1px 0 rgba(var(--accent-rgb),.05);
+      margin: 14px 0;
+    }
+    .user-highlight {
+      border-radius: 6px;
+      padding: 0 1px;
+      box-decoration-break: clone;
+      -webkit-box-decoration-break: clone;
+      background-image: linear-gradient(to bottom, transparent 35%, var(--hl-color, #fff59d) 35%, var(--hl-color, #fff59d) 88%, transparent 88%);
+    }
+    .user-underline {
+      border-bottom: 3px solid var(--ul-color, var(--pink-500));
+      border-radius: 3px;
+      padding: 0 1px;
+      box-decoration-break: clone;
+      -webkit-box-decoration-break: clone;
+    }
+    .site-auth-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 3000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: max(16px, env(safe-area-inset-bottom));
+      background: rgba(45, 22, 38, 0.45);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .site-auth-backdrop.is-open { display: flex; }
+    .site-auth-dialog {
+      width: min(440px, 100%);
+      max-height: min(90vh, 720px);
+      overflow: auto;
+      position: relative;
+      background: rgba(255,255,255,.97);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      padding: 24px 22px 22px;
+    }
+    .site-auth-close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 42px;
+      height: 42px;
+      border: none;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      cursor: pointer;
+      font-size: 22px;
+      line-height: 1;
+      color: var(--text-3);
+    }
+    .site-auth-close:hover { background: var(--pink-50); color: var(--pink-600); }
+    .site-auth-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      padding-right: 36px;
+    }
+    .site-auth-tab {
+      flex: 1;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--pink-50);
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-2);
+      cursor: pointer;
+      transition: transform .12s, filter .12s;
+    }
+    .site-auth-tab.is-active {
+      background: linear-gradient(180deg,var(--pink-500),var(--pink-600));
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 8px 20px rgba(var(--accent-rgb),.22);
+    }
+    .site-auth-lead { font-size: 15px; font-weight: 700; color: var(--text); margin: 0 0 14px; }
+    .site-auth-alert {
+      padding: 11px 14px;
+      border-radius: var(--radius-sm);
+      background: var(--pink-50);
+      border: 1px solid var(--pink-200);
+      color: var(--pink-600);
+      font-size: 14px;
+      margin-bottom: 14px;
+    }
+    .site-auth-submit { width: 100%; justify-content: center; margin-top: 8px; }
+    .site-auth-switch { text-align: center; margin-top: 16px; font-size: 14px; color: var(--text-2); }
+    .site-auth-linkish {
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: var(--pink-500);
+      font-weight: 700;
+      font: inherit;
+      text-decoration: underline;
+      padding: 0;
+    }
+    .site-auth-linkish:hover { color: var(--pink-600); }
+    .site-auth-panel .form-error:empty { display: none; }
+    .site-auth-panel .form-error:not(:empty) { display: block; }
+
+    /* Nicer inputs inside auth modal (avoid bluish autofill look) */
+    .site-auth-dialog .form-input {
+      background: rgba(255,255,255,.96);
+      border-color: rgba(var(--accent-rgb), .18);
+      box-shadow: 0 1px 0 rgba(255,255,255,.9), inset 0 1px 2px rgba(17,24,39,.06);
+    }
+    .site-auth-dialog .form-input::placeholder { color: var(--text-3); }
+    .site-auth-dialog .form-input:focus {
+      border-color: rgba(var(--accent-rgb), .55);
+      box-shadow: var(--ring), inset 0 1px 2px rgba(17,24,39,.06);
+    }
+    .site-auth-dialog input.form-input:-webkit-autofill,
+    .site-auth-dialog input.form-input:-webkit-autofill:hover,
+    .site-auth-dialog input.form-input:-webkit-autofill:focus,
+    .site-auth-dialog input.form-input:-webkit-autofill:active {
+      -webkit-text-fill-color: var(--text);
+      transition: background-color 9999s ease-out 0s;
+      box-shadow: 0 0 0 1000px rgba(255,255,255,.96) inset, inset 0 1px 2px rgba(17,24,39,.06);
+      border-color: rgba(var(--accent-rgb), .24);
+    }
+    @media (max-width:600px) {
+      nav { padding:0 16px; }
+      .container { padding:24px 16px; }
+      .nav-links .nav-link:not(.btn-nav) { display:none; }
+    }
+  </style>
+  <link rel="stylesheet" href="{% static 'css/translator.css' %}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body class="{% if request.path == '/' %}home{% endif %}">
+
+{% if not request.path == '/' %}
+<nav>
+  <a href="{% url 'home' %}" class="nav-logo">Slovak.sk <span>словацька</span></a>
+  <div class="nav-links">
+    {% if user.is_authenticated %}
+      <a href="{% url 'dashboard' %}" class="nav-link">Головна</a>
+      <a href="{% url 'grammar_list' %}" class="nav-link">Навчання</a>
+      <a href="{% url 'quiz' %}" class="nav-link">Тест</a>
+      <a href="{% url 'stats' %}" class="nav-link">Статистика</a>
+      <a href="{% url 'certificates_page' %}" class="nav-link">Сертифікати</a>
+      <a href="{% url 'profile' %}" class="nav-link">{{ user.first_name|default:user.username }}</a>
+      <a href="{% url 'logout' %}" class="nav-link btn-nav">Вийти</a>
+    {% else %}
+      <a href="{% url 'placement_test' %}" class="nav-link">Визначити рівень</a>
+      <a href="{% url 'login' %}" class="nav-link js-open-auth-modal" data-auth="login">Увійти</a>
+      <a href="{% url 'register' %}" class="nav-link btn-nav js-open-auth-modal" data-auth="register">Реєстрація</a>
+    {% endif %}
+  </div>
+</nav>
+{% endif %}
+
+{% if messages %}
+<div style="max-width:1400px;margin:16px auto 0;padding:0 24px;">
+  <ul class="messages-list">
+    {% for msg in messages %}
+    <li class="{{ msg.tags }}">{{ msg }}</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
+
+<main>
+  {% block content %}{% endblock %}
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">Slovak.sk</div>
+        <div class="footer-note">
+          Платформа для вивчення словацької: уроки, вправи, тести, статистика та сертифікація.
+        </div>
+        <div class="social-row">
+          <a class="social-btn" href="#" aria-label="Facebook">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+              <path d="M14 9h3V6h-3c-2.2 0-4 1.8-4 4v3H7v3h3v6h3v-6h3l1-3h-4v-3c0-.6.4-1 1-1Z"/>
+            </svg>
+          </a>
+          <a class="social-btn" href="#" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+              <rect x="2" y="2" width="20" height="20" rx="4.5"/>
+              <circle cx="12" cy="12" r="4"/>
+              <circle cx="18" cy="6" r="1"/>
+            </svg>
+          </a>
+          <a class="social-btn" href="#" aria-label="Telegram">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+              <path d="M21 5 2.8 12.3c-.8.3-.8 1.4.1 1.6l4.7 1.4 1.8 5.3c.2.7 1.1.9 1.6.4l2.8-2.8 4.8 3.5c.6.4 1.4.1 1.6-.6L22 6.6c.2-.9-.6-1.6-1.4-1.2Z"/>
+              <path d="M8 15.5 19 8"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <div>
+        <div class="footer-col-title">Навігація</div>
+        <div class="footer-links">
+          <a class="footer-a" href="{% url 'grammar_list' %}">Навчання</a>
+          <a class="footer-a" href="{% url 'placement_test' %}">Тест рівня</a>
+          <a class="footer-a" href="{% url 'texts' %}">Тексти</a>
+          <a class="footer-a" href="{% url 'dictionary' %}">Словник</a>
+        </div>
+      </div>
+
+      <div>
+        <div class="footer-col-title">Продукт</div>
+        <div class="footer-links">
+          <a class="footer-a" href="{% url 'certificates_page' %}">Сертифікати</a>
+          <a class="footer-a" href="{% url 'premium_page' %}">Premium</a>
+          {% if user.is_authenticated %}
+            <a class="footer-a" href="{% url 'profile' %}">Профіль</a>
+          {% else %}
+            <a class="footer-a js-open-auth-modal" href="{% url 'register' %}" data-auth="register">Реєстрація</a>
+          {% endif %}
+          <a class="footer-a" href="mailto:support@slovak.sk">Підтримка</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <div>© {% now "Y" %} Slovak.sk</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+      <span>Зроблено з любовʼю до мови</span>
+    </div>
+  </div>
+
+</footer>
+
+{% if not user.is_authenticated %}
+{% include 'accounts/_auth_modal.html' %}
+<script>
+(function () {
+  const backdrop = document.getElementById('siteAuthBackdrop');
+  if (!backdrop) return;
+
+  function csrfTokenFromForm(form) {
+    const inp = form.querySelector('input[name="csrfmiddlewaretoken"]');
+    if (inp && inp.value) return inp.value;
+    const m = document.cookie.match(/csrftoken=([^;]+)/);
+    return m ? decodeURIComponent(m[1]) : '';
+  }
+
+  function clearErrors() {
+    const le = document.getElementById('modalLoginErr');
+    if (le) { le.textContent = ''; le.hidden = true; }
+    const ge = document.getElementById('modalRegisterGlobalErr');
+    if (ge) { ge.textContent = ''; ge.hidden = true; }
+    backdrop.querySelectorAll('.site-auth-panel .form-error').forEach((el) => { el.textContent = ''; });
+  }
+
+  window.closeAuthModal = function () {
+    backdrop.classList.remove('is-open');
+    backdrop.setAttribute('aria-hidden', 'true');
+    document.documentElement.style.overflow = '';
+  };
+
+  window.openAuthModal = function (mode, nextPath) {
+    const nextLogin = document.getElementById('modalLoginNext');
+    const nextReg = document.getElementById('modalRegisterNext');
+    const path = (typeof nextPath === 'string' && nextPath.trim()) ? nextPath.trim()
+      : (window.location.pathname + window.location.search) || '/';
+    if (nextLogin) nextLogin.value = path;
+    if (nextReg) nextReg.value = path;
+    clearErrors();
+    showPanel(mode === 'register' ? 'register' : 'login');
+    backdrop.classList.add('is-open');
+    backdrop.setAttribute('aria-hidden', 'false');
+    document.documentElement.style.overflow = 'hidden';
+  };
+
+  function showPanel(which) {
+    const isReg = which === 'register';
+    document.getElementById('siteAuthPanelLogin').hidden = isReg;
+    document.getElementById('siteAuthPanelRegister').hidden = !isReg;
+    backdrop.querySelectorAll('[data-auth-tab]').forEach((btn) => {
+      const on = btn.getAttribute('data-auth-tab') === (isReg ? 'register' : 'login');
+      btn.classList.toggle('is-active', on);
+    });
+    clearErrors();
+    if (!isReg) document.getElementById('modalLoginUser')?.focus();
+    else document.getElementById('modalRegName')?.focus();
+  }
+
+  document.body.addEventListener('click', (e) => {
+    const trig = e.target.closest('.js-open-auth-modal');
+    if (!trig) return;
+    e.preventDefault();
+    window.openAuthModal(trig.dataset.auth || 'login', trig.dataset.next);
+  });
+
+  document.getElementById('siteAuthClose')?.addEventListener('click', window.closeAuthModal);
+  backdrop.addEventListener('click', (e) => { if (e.target === backdrop) window.closeAuthModal(); });
+
+  backdrop.querySelectorAll('[data-auth-tab]').forEach((btn) => {
+    btn.addEventListener('click', () => showPanel(btn.getAttribute('data-auth-tab')));
+  });
+  backdrop.querySelectorAll('[data-auth-tab-switch]').forEach((btn) => {
+    btn.addEventListener('click', () => showPanel(btn.getAttribute('data-auth-tab-switch')));
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && backdrop.classList.contains('is-open')) window.closeAuthModal();
+  });
+
+  async function postAuthForm(form) {
+    clearErrors();
+    const submit = form.querySelector('.site-auth-submit');
+    if (submit) submit.disabled = true;
+    try {
+      const res = await fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form),
+        credentials: 'same-origin',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-CSRFToken': csrfTokenFromForm(form),
+        },
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.ok && data.redirect) {
+        window.location.href = data.redirect;
+        return;
+      }
+      if (data.error) {
+        const box = document.getElementById('modalLoginErr');
+        if (box) { box.textContent = data.error; box.hidden = false; }
+        return;
+      }
+      if (data.errors && typeof data.errors === 'object') {
+        let any = false;
+        Object.entries(data.errors).forEach(([k, v]) => {
+          const el = document.getElementById('err_' + k);
+          if (el && v) {
+            el.textContent = Array.isArray(v) ? v[0] : String(v);
+            any = true;
+          }
+        });
+        if (!any) {
+          const ge = document.getElementById('modalRegisterGlobalErr');
+          if (ge) { ge.textContent = 'Перевір будь ласка поля форми.'; ge.hidden = false; }
+        }
+      }
+    } catch (err) {
+      const ge = document.getElementById('modalRegisterGlobalErr');
+      if (ge) {
+        ge.textContent = 'Помилка мережі. Спробуй ще раз.';
+        ge.hidden = false;
+      }
+    } finally {
+      const submit2 = form.querySelector('.site-auth-submit');
+      if (submit2) submit2.disabled = false;
+    }
+  }
+
+  document.getElementById('modalLoginForm')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    postAuthForm(e.target);
+  });
+  document.getElementById('modalRegisterForm')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    postAuthForm(e.target);
+  });
+})();
+</script>
+{% endif %}
+<script src="{% static 'js/translator.js' %}"></script>
+</body>
+</html>
